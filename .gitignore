@@ -1,0 +1,8 @@
+
+.project
+
+*.prefs
+
+*.txt
+
+bin/*
