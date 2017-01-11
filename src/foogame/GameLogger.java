@@ -42,7 +42,7 @@ public class GameLogger implements GameObserver {
 		for (int i = 0; i < size; i++) {
 			b.append("|");
 			for (int j = 0; j < size; j++) {
-				b.append(" " + Optional.of(board.getBoardArray()[i][j])
+				b.append(" " + Optional.of(board.getBoardArray()[size-i-1][j])
 						.filter(x -> !x.isEmpty())
 						.map(Stack::top)
 						.map(x -> ((Function<String, String>) (x.type == PieceType.FLAT
