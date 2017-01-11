@@ -3,6 +3,7 @@ package foogame;
 import java.util.Arrays;
 import java.util.EnumMap;
 import java.util.Optional;
+import java.util.function.Predicate;
 import java.util.stream.Stream;
 
 public class Board {
@@ -39,7 +40,7 @@ public class Board {
 			return null;
 		}
 
-		@SuppressWarnings("unchecked") final Stack[][] result = new Stack[original.length][];
+		final Stack[][] result = new Stack[original.length][];
 		for (int i = 0; i < original.length; i++) {
 			result[i] = Arrays.copyOf(original[i], original[i].length);
 		}
@@ -47,7 +48,7 @@ public class Board {
 	}
 
 	private static final Stack[][] emptyBoard(int size) {
-		@SuppressWarnings("unchecked") Stack[][] boardArray = new Stack[size][size];
+		Stack[][] boardArray = new Stack[size][size];
 		for (int i = 0; i < size; i++) {
 			for (int j = 0; j < size; j++) {
 				boardArray[i][j] = Stack.EMPTY;
@@ -63,7 +64,7 @@ public class Board {
 		if (m instanceof PlaceStone) {
 			return isLegalPlaceStone((PlaceStone) m);
 		} else if (m instanceof MoveStack) {
-			return isLegalCapture((MoveStack) m);
+			return isLegalMoveStack((MoveStack) m);
 		} else {
 			throw new RuntimeException();
 		}
@@ -71,11 +72,6 @@ public class Board {
 
 	private boolean isLegalPlaceStone(PlaceStone m) {
 		return inBounds(m) && numStones.get(m.color) != 0 && boardArray[m.x][m.y].isEmpty();
-	}
-
-	private boolean isLegalCapture(MoveStack m) {
-		return inBounds(m) ;//&& boardArray[m.x][m.y].filter(x -> x.color == m.color).isPresent()
-				//&& boardArray[m.x + m.dir.dx][m.y + m.dir.dy].filter(x -> x.color != m.color && x.type == PieceType.STONE).isPresent();
 	}
 	
 	private boolean isLegalMoveStack(MoveStack m) {
@@ -90,10 +86,6 @@ public class Board {
 		if (s.isEmpty()) {
 			return false;
 		}
-		
-		//Stack[] stacks = s.split(m.count);
-		
-		//Stack grabStack = stacks[1];
 		
 		int row = m.x + m.dir.dx * m.dropCounts.length;
 		int col = m.y + m.dir.dy * m.dropCounts.length;
@@ -244,7 +236,7 @@ public class Board {
 	}
 
 	public Board rotateBoard() {
-		@SuppressWarnings("unchecked") Stack[][] array = new Stack[size][size];
+		Stack[][] array = new Stack[size][size];
 		for (int i = 0; i < size; i++) {
 			for (int j = 0; j < size; j++) {
 				array[i][j] = boardArray[size - j - 1][i];

@@ -34,6 +34,9 @@ public class Stack {
 	
 	// hehe
 	public Stone top() {
+		if (isEmpty()) {
+			throw new RuntimeException("Oops! Can't get the top because the stack is empty!");
+		}
 		return stones[stones.length-1];
 	}
 	
