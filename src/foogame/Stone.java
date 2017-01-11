@@ -8,6 +8,10 @@ public class Stone {
     this.type = type;
     this.color = color;
   }
+  
+  public String toString() {
+	  return String.format("(%s %s)", type.name(), color.name());
+  }
 }
 
 enum PieceType {

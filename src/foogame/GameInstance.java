@@ -76,15 +76,13 @@ public class GameInstance {
 	private static Player parsePlayer(String s) {
 		if (s.equals("T")) {
 			return new TUIPlayer();
-		}
-		else if (s.startsWith("M")) {
+		} else if (s.startsWith("M")) {
 			int depth = Integer.parseInt(s.substring(1));
 			System.out.printf("Using minimaxer with depth %d%n", depth);
 			return new Minimaxer(depth);
-		}
-		else {
-			return null;
-			//return new Artificial.Artifical1();
+
+		} else {
+			return new Artificial.Artifical1();
 		}
 	}
 }
