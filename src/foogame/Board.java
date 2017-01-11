@@ -266,7 +266,11 @@ public class Board {
 		for (int i = 0; i < size; i++) {
 			for (int j = 0; j < size; j++) {
 				Stack val = boardArray[i][j];
-				if (Optional.of(val).map(Stack::top).filter(x -> x.color == c && x.type == PieceType.FLAT).isPresent())
+				if (Optional.of(val)
+						.filter(((Predicate<Stack>) Stack::isEmpty).negate())
+						.map(Stack::top)
+						.filter(x -> x.color == c && x.type == PieceType.FLAT)
+						.isPresent())
 					n++;
 			}
 		}
