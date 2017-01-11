@@ -3,8 +3,6 @@ package foogame;
 import java.io.IOException;
 import java.util.*;
 
-import foogame.Artificial.Artifical1;
-
 public class GameInstance {
 	private final EnumMap<Color, Player> players;
 	private final Set<GameObserver> observers;

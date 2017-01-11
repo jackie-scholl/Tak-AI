@@ -15,8 +15,8 @@ public class Stack {
 	public Stack[] split(int distanceDown) {
 		if (distanceDown == 0 || distanceDown == stones.length) {
 			throw new RuntimeException("bad split size");
-		}
-		return new Stack[]{new Stack(Arrays.copyOfRange(stones, 0, distanceDown)), new Stack(Arrays.copyOfRange(stones, distanceDown, stones.length))};
+		}*/
+		return new Stack[]{new Stack(Arrays.copyOfRange(stones, 0, stones.length - distanceDown)), new Stack(Arrays.copyOfRange(stones, stones.length - distanceDown, stones.length))};
 	}
 	
 	public Stone[] getCopy() {

@@ -13,11 +13,11 @@ public class PlaceStone extends Move {
 	}
 	
 	private String rowName(int y) {
-		return String.valueOf('a' - 1 + (char) y);
+		return String.valueOf((char) ('a' + y));
 	}
 	
 	private String location(int x, int y) {
-		return rowName(y) + x;
+		return rowName(y) + (x+1);
 	}
 	
 	public String ptn() {

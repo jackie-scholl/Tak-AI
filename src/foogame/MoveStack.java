@@ -36,7 +36,7 @@ public class MoveStack extends Move {
 	}
 	
 	private String rowName(int y) {
-		return String.valueOf('a' - 1 + (char) y);
+		return String.valueOf((char) ('a' + y));
 	}
 	
 	private String location(int x, int y) {
