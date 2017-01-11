@@ -6,6 +6,9 @@ import java.util.Optional;
 public class PTNInput {
 	
 	public static Optional<Move> parse(String input, Color color) {
+		if (input.isEmpty()) {
+			return Optional.empty();
+		}
 		if (Character.isAlphabetic(input.charAt(0))) {
 			// MUST be a PlaceStone
 			return parsePlaceStone(input, color);
