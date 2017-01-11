@@ -49,7 +49,21 @@ public class GameLogger implements GameObserver {
 		b.append("+----------+\n");
 		b.append(String.format("Num stones left: %s%n", board.getNumStones()));
 		b.append(String.format("Board spots: %s%n", board.numStonesOnBoard()));
-
-		return b.toString();
+		
+		// Tak Positional System (TPS)
+		StringBuilder tps = new StringBuilder();
+		
+		for (int i = size; i > 0; i--) {
+			tps.append("row" + i);
+			if (i != 1){
+				tps.append("/");
+			}
+			for (int j = 0; j<size; j++){
+				tps.append(""+(j+1));
+			}
+		}
+		
+		return b.toString() + tps.toString();
+				
 	}
 }
