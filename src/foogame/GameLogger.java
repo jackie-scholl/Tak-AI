@@ -35,6 +35,7 @@ public class GameLogger implements GameObserver {
 		Board board = update.board;
 		int size = board.size;
 		//print out new board
+		b.append(String.format("Last move: %s%n", update.last.ptn()));
 		b.append(String.format("Move by %s resulted in board:%n", update.last.color));
 		b.append("+----------+\n");
 		for (int i=0; i<size; i++) {

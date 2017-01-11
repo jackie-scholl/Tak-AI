@@ -27,7 +27,7 @@ public class GameInstance {
 		this.players = new EnumMap<Color, Player>(players);
 		this.observers = new HashSet<>(observers);
 		this.observers.addAll(players.values());
-		this.board = new Board(6);
+		this.board = new Board(5);
 	}
 	
 	public Optional<Color> runSingle() {

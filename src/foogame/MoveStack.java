@@ -8,6 +8,7 @@ public class MoveStack extends Move {
 	public final int y;
 	public final Direction dir;
 	public final int count;
+	public final int length;
 	public final int[] dropCounts;
 	
 	public MoveStack(Color color, int x, int y, Direction dir, int... dropCounts) {
@@ -16,6 +17,7 @@ public class MoveStack extends Move {
 		this.y = y;
 		this.dir = dir;
 		this.dropCounts = Arrays.copyOf(dropCounts, dropCounts.length);
+		this.length = dropCounts.length;
 		this.count = Arrays.stream(dropCounts).reduce(0, Integer::sum);
 	}
 	
