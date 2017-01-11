@@ -77,13 +77,83 @@ public class Board {
 		return inBounds(m) ;//&& boardArray[m.x][m.y].filter(x -> x.color == m.color).isPresent()
 				//&& boardArray[m.x + m.dir.dx][m.y + m.dir.dy].filter(x -> x.color != m.color && x.type == PieceType.STONE).isPresent();
 	}
-
+	
+	private boolean isLegalMoveStack(MoveStack m) {
+		if (m.count > size || m.count < 1) {
+			return false;
+		}
+		if (!inBounds(m)) {
+			return false;
+		}
+		
+		Optional<Stack> sOpt = boardArray[m.x][m.y];
+		if (!sOpt.isPresent()) {
+			return false;
+		}
+		
+		Stack s = sOpt.get();
+		
+		//Stack[] stacks = s.split(m.count);
+		
+		//Stack grabStack = stacks[1];
+		
+		int row = m.x + m.dir.dx * m.dropCounts.length;
+		int col = m.y + m.dir.dy * m.dropCounts.length;
+		
+		for (int i=m.dropCounts.length - 1; i >= 0; i--) {
+			row -= m.dir.dx;
+			col -= m.dir.dy;
+			int grabThisTime = m.dropCounts[i];
+			Stack[] stacks = s.split(grabThisTime);
+			Stack miniStack = stacks[1]; // aka grabStack
+			s = stacks[0];
+			if (!isLegalMiniStack(row, col, miniStack)) {
+				return false;
+			}
+		}
+		
+		return true;
+	}
+	
+	private boolean isLegalMiniStack(int row, int col, Stack miniStack) {
+		if (!inBounds(row) || !inBounds(col)) {
+			return false;
+		}
+		
+		if (!boardArray[row][col].isPresent()) {
+			return true;
+		}
+		
+		PieceType t = boardArray[row][col].get().top().type;
+		
+		if (t == PieceType.CAPSTONE) {
+			return false;
+		}
+		
+		if (t == PieceType.FLAT) {
+			return true;
+		}
+		
+		if (t == PieceType.WALL) {
+			if (miniStack.getCopy()[0].type == PieceType.CAPSTONE) {
+				return true;
+			}
+			return false;
+		}
+		
+		throw new RuntimeException("Impossible!");
+	}
+	
+	
 	private boolean inBounds(PlaceStone m) {
 		return inBounds(m.x) && inBounds(m.y);
 	}
 
 	private boolean inBounds(MoveStack m) {
-		return inBounds(m.x) && inBounds(m.y) && inBounds(m.x + m.dir.dx) && inBounds(m.y + m.dir.dy);
+		return inBounds(m.x)
+			&& inBounds(m.y)
+			&& inBounds(m.x + m.dir.dx * m.dropCounts.length)
+			&& inBounds(m.y + m.dir.dy * m.dropCounts.length);
 	}
 
 	public boolean inBounds(int x) {
@@ -97,7 +167,7 @@ public class Board {
 		if (m instanceof PlaceStone) {
 			return doPlaceStone((PlaceStone) m);
 		} else if (m instanceof MoveStack) {
-			return doCapture((MoveStack) m);
+			return doMoveStack((MoveStack) m);
 		} else {
 			throw new RuntimeException();
 		}
@@ -111,15 +181,51 @@ public class Board {
 		return new Board(array, numStones, m.color.other());
 	}
 
-	private Board doCapture(MoveStack m) {
+	/*private Board doCapture(MoveStack m) {
 		Optional<Stack>[][] array = deepCopy(boardArray);
 		//PieceType oldType = array[m.x][m.y].get().top().type;
 		Stack movingStack = array[m.x][m.y].get();
 		array[m.x][m.y] = Optional.empty();
-		Stack bottomStack = array[m.x+m.dir.dx][m.y+m.dir.dy].get();
-		array[m.x + m.dir.dx][m.y + m.dir.dy] = Optional.of(bottomStack.addOnTop(movingStack));
+		Optional<Stack> bottomStack = array[m.x+m.dir.dx][m.y+m.dir.dy];
+		if (bottomStack.isPresent()) {
+			array[m.x + m.dir.dx][m.y + m.dir.dy] = Optional.of(bottomStack.get().addOnTop(movingStack));
+		} else {
+			array[m.x + m.dir.dx][m.y + m.dir.dy] = Optional.of(movingStack);
+		}
+		return new Board(array, this.numStones, m.color.other());
+	}*/
+	
+	private Board doMoveStack(MoveStack m) {
+		Optional<Stack>[][] array = deepCopy(boardArray);
+		Stack s = boardArray[m.x][m.y].get();
+		
+		int row = m.x + m.dir.dx * m.dropCounts.length;
+		int col = m.y + m.dir.dy * m.dropCounts.length;
+		
+		for (int i=m.dropCounts.length - 1; i >= 0; i--) {
+			row -= m.dir.dx;
+			col -= m.dir.dy;
+			int grabThisTime = m.dropCounts[i];
+			Stack[] stacks = s.split(grabThisTime);
+			Stack miniStack = stacks[1]; // aka grabStack
+			s = stacks[0];
+			Stack remain = applyMiniStack(row, col, miniStack);
+			array[row][col] = Optional.of(remain);
+		}
+		
+		array[m.x][m.y] = Optional.of(s);
+		
 		return new Board(array, this.numStones, m.color.other());
 	}
+	
+	private Stack applyMiniStack(int row, int col, Stack miniStack) {
+		Optional<Stack> current = boardArray[row][col];
+		if (!current.isPresent()) {
+			return miniStack;
+		}
+		return current.get().addOnTop(miniStack);
+	}
+
 
 	public Optional<Color> hasAnyoneWon() {
 		//Optional<Color> result = WinChecker.winCheck(this);
