@@ -27,7 +27,8 @@ public class TUIPlayer implements Player {
 		//3 5 UP
 		while (true) {
 			String result = System.console().readLine("Make move (%s): ", board.whoseTurn.name());
-			Optional<Move> move = parseMove(board, result);
+			//Optional<Move> move = parseMove(board, result);
+			Optional<Move> move = parseMove2(board, result);
 			if (move.isPresent()) {
 				return move.get();
 			}
@@ -64,7 +65,18 @@ public class TUIPlayer implements Player {
 			return Optional.empty();
 		}
 		//return board.isLegalMove(m)? Optional.of(m) : Optional.empty();
-
+	}
+	
+	public Optional<Move> parseMove2(Board board, String result) {
+		Optional<Move> m = PTNInput.parse(result, board.whoseTurn);
+		if (!m.isPresent()) {
+			return m;
+		}
+		if (!board.isLegalMove(m.get())) {
+			System.err.println("Illegal move");
+			return Optional.empty();
+		}
+		return m;
 	}
 
 }
