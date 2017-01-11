@@ -76,30 +76,34 @@ public class Board {
 	
 	private boolean isLegalMoveStack(MoveStack m) {
 		if (m.count > size || m.count < 1) {
+			System.out.println("bad count");
 			return false;
 		}
 		if (!inBounds(m)) {
+			System.out.println("out of bounds");
 			return false;
 		}
 		
 		Stack s = boardArray[m.x][m.y];
 		if (s.isEmpty()) {
+			System.out.println("nothing to move from");
 			return false;
 		}
 		
 		int row = m.x + m.dir.dx * m.dropCounts.length;
 		int col = m.y + m.dir.dy * m.dropCounts.length;
 		
-		for (int i=m.dropCounts.length - 1; i >= 0; i--) {
-			row -= m.dir.dx;
-			col -= m.dir.dy;
+		for (int i = m.dropCounts.length - 1; i >= 0; i--) {
 			int grabThisTime = m.dropCounts[i];
 			Stack[] stacks = s.split(grabThisTime);
 			Stack miniStack = stacks[1]; // aka grabStack
 			s = stacks[0];
 			if (!isLegalMiniStack(row, col, miniStack)) {
+				System.out.println("illegal ministack");
 				return false;
 			}
+			row -= m.dir.dx;
+			col -= m.dir.dy;
 		}
 		
 		return true;
@@ -107,6 +111,7 @@ public class Board {
 	
 	private boolean isLegalMiniStack(int row, int col, Stack miniStack) {
 		if (!inBounds(row) || !inBounds(col)) {
+			System.out.println("out of bounds  2");
 			return false;
 		}
 		
@@ -117,6 +122,7 @@ public class Board {
 		PieceType t = boardArray[row][col].top().type;
 		
 		if (t == PieceType.CAPSTONE) {
+			System.out.println("can't move onto capstone");
 			return false;
 		}
 		
@@ -126,6 +132,7 @@ public class Board {
 		
 		if (t == PieceType.WALL) {
 			if (miniStack.getCopy()[0].type == PieceType.CAPSTONE) {
+				System.out.println("can't move onto wall unless ur a capstone");
 				return true;
 			}
 			return false;
@@ -192,7 +199,7 @@ public class Board {
 		int row = m.x + m.dir.dx * m.length;
 		int col = m.y + m.dir.dy * m.length;
 		
-		for (int i=m.length - 1; i >= 0; i--) {
+		for (int i = m.length - 1; i >= 0; i--) {
 			int grabThisTime = m.dropCounts[i];
 			System.out.printf("(%d, %d, %d)%n", row, col, grabThisTime);
 			Stack[] stacks = s.split(grabThisTime);

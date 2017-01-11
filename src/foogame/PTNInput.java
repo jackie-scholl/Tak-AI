@@ -53,7 +53,7 @@ public class PTNInput {
 		if (input.length() > 4) {
 			counts = Arrays.stream(input.substring(4).split("")).mapToInt(Integer::parseInt).toArray();
 			if (Arrays.stream(counts).reduce(0, Integer::sum) != count) {
-				System.err.printf("Count of %i does not match counts %s%n", count, counts);
+				System.err.printf("Count of %d does not match counts %s%n", count, counts);
 				return Optional.empty();
 			}
 		}
