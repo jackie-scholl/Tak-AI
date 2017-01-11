@@ -1,6 +1,7 @@
 package foogame;
 
 import java.util.Arrays;
+import java.util.stream.Collectors;
 
 public class MoveStack extends Move {
 	public final int x;
@@ -34,19 +35,40 @@ public class MoveStack extends Move {
 		return true;
 	}
 	
+	private String rowName(int y) {
+		return String.valueOf('a' - 1 + (char) y);
+	}
+	
+	private String location(int x, int y) {
+		return rowName(y) + x;
+	}
+
+	public String ptn() {
+		StringBuilder buff = new StringBuilder();
+		
+		buff.append(count);
+		buff.append(location(x, y));
+		buff.append(dir.notationName);
+		buff.append(String.join("", Arrays.stream(dropCounts).mapToObj(String::valueOf).collect(Collectors.toList())));
+		
+		return buff.toString();
+	}
+	
 }
 
 enum Direction {
-	LEFT (0, -1),
-	RIGHT (0, 1),
-	UP (-1, 0),
-	DOWN (1, 0);
+	LEFT (0, -1, "<"),
+	RIGHT (0, 1, ">"),
+	UP (-1, 0, "+"),
+	DOWN (1, 0, "-");
 	
 	public final int dx;
 	public final int dy;
+	public final String notationName;
 
-	Direction(int deltaX, int deltaY) {
+	Direction(int deltaX, int deltaY, String notationName) {
 		this.dx = deltaX;
 		this.dy = deltaY;
+		this.notationName = notationName;
 	}
 }

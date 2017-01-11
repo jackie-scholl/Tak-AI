@@ -11,6 +11,12 @@ public class Stone {
 }
 
 enum PieceType {
-	FLAT, WALL;
+	FLAT("F"), WALL("S"), CAPSTONE("C");
+	
+	public final String notationName;
+
+	private PieceType(String notationName) {
+		this.notationName = notationName;
+	}
 }
 

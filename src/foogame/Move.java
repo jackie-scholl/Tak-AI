@@ -6,4 +6,6 @@ public abstract class Move {
 	public Move(Color color) {
 		this.color = color;
 	}
+	
+	public abstract String ptn();
 }
