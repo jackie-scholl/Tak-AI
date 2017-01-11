@@ -42,7 +42,7 @@ public class MoveStack extends Move {
 	}
 	
 	private String location(int x, int y) {
-		return rowName(y) + x;
+		return rowName(y) + (x + 1);
 	}
 
 	public String ptn() {
