@@ -83,7 +83,8 @@ public class GameInstance {
 			return new Minimaxer(depth);
 		}
 		else {
-			return new Artificial.Artifical1();
+			return null;
+			//return new Artificial.Artifical1();
 		}
 	}
 }
