@@ -26,7 +26,7 @@ public class Artificial {
 	 * element is the y coordinate (there to place in boardArray[x][])
 	 */
 	public static Move AiMove1(Board board) {
-		Optional<Stack>[][] boardArray = board.getBoardArray();
+		Stack[][] boardArray = board.getBoardArray();
 		for (int i = 0; i < boardArray.length; i++) {
 			for (int j = 0; j < boardArray[i].length; j++) {
 				Move m = new PlaceStone(board.whoseTurn, i, j, PieceType.FLAT);
@@ -42,7 +42,7 @@ public class Artificial {
 	 * same as AiMove1 but starts at the bottom \(��)/
 	 */
 	public static Move AiMove2(Board board) {
-		Optional<Stack>[][] boardArray = board.getBoardArray();
+		Stack[][] boardArray = board.getBoardArray();
 		for (int i = boardArray.length-1; i > 0; i--) {
 			for (int j = boardArray[i].length-1; j > 0; j--) {
 				Move m = new PlaceStone(board.whoseTurn, i, j, PieceType.FLAT);

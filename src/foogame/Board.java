@@ -7,18 +7,18 @@ import java.util.stream.Stream;
 
 public class Board {
 	private final EnumMap<Color, Integer> numStones;
-	private final Optional<Stack>[][] boardArray;
+	private final Stack[][] boardArray;
 	public final Color whoseTurn;
 	public final int size;
 
-	public Board(Optional<Stack>[][] boardArray, EnumMap<Color, Integer> numStones, Color whoseTurn) {
+	public Board(Stack[][] boardArray, EnumMap<Color, Integer> numStones, Color whoseTurn) {
 		this.numStones = new EnumMap<Color, Integer>(numStones);
 		this.boardArray = deepCopy(boardArray);
 		this.whoseTurn = whoseTurn;
 		this.size = boardArray.length;
 	}
 
-	public Board(Optional<Stack>[][] boardArray) {
+	public Board(Stack[][] boardArray) {
 		this(boardArray, baseNumStones(boardArray.length), Color.WHITE);
 	}
 
@@ -34,23 +34,23 @@ public class Board {
 		return numStones;
 	}
 
-	private static Optional<Stack>[][] deepCopy(Optional<Stack>[][] original) {
+	private static Stack[][] deepCopy(Stack[][] original) {
 		if (original == null) {
 			return null;
 		}
 
-		@SuppressWarnings("unchecked") final Optional<Stack>[][] result = new Optional[original.length][];
+		@SuppressWarnings("unchecked") final Stack[][] result = new Stack[original.length][];
 		for (int i = 0; i < original.length; i++) {
 			result[i] = Arrays.copyOf(original[i], original[i].length);
 		}
 		return result;
 	}
 
-	private static final Optional<Stack>[][] emptyBoard(int size) {
-		@SuppressWarnings("unchecked") Optional<Stack>[][] boardArray = new Optional[size][size];
+	private static final Stack[][] emptyBoard(int size) {
+		@SuppressWarnings("unchecked") Stack[][] boardArray = new Stack[size][size];
 		for (int i = 0; i < size; i++) {
 			for (int j = 0; j < size; j++) {
-				boardArray[i][j] = Optional.empty();
+				boardArray[i][j] = Stack.EMPTY;
 			}
 		}
 		return boardArray;
@@ -70,7 +70,7 @@ public class Board {
 	}
 
 	private boolean isLegalPlaceStone(PlaceStone m) {
-		return inBounds(m) && numStones.get(m.color) != 0 && !boardArray[m.x][m.y].isPresent();
+		return inBounds(m) && numStones.get(m.color) != 0 && boardArray[m.x][m.y].isEmpty();
 	}
 
 	private boolean isLegalCapture(MoveStack m) {
@@ -86,12 +86,10 @@ public class Board {
 			return false;
 		}
 		
-		Optional<Stack> sOpt = boardArray[m.x][m.y];
-		if (!sOpt.isPresent()) {
+		Stack s = boardArray[m.x][m.y];
+		if (s.isEmpty()) {
 			return false;
 		}
-		
-		Stack s = sOpt.get();
 		
 		//Stack[] stacks = s.split(m.count);
 		
@@ -120,11 +118,11 @@ public class Board {
 			return false;
 		}
 		
-		if (!boardArray[row][col].isPresent()) {
+		if (boardArray[row][col].isEmpty()) {
 			return true;
 		}
 		
-		PieceType t = boardArray[row][col].get().top().type;
+		PieceType t = boardArray[row][col].top().type;
 		
 		if (t == PieceType.CAPSTONE) {
 			return false;
@@ -174,8 +172,8 @@ public class Board {
 	}
 
 	private Board doPlaceStone(PlaceStone m) {
-		Optional<Stack>[][] array = deepCopy(boardArray);
-		array[m.x][m.y] = Optional.of(new Stack(new Stone(m.type, m.color)));
+		Stack[][] array = deepCopy(boardArray);
+		array[m.x][m.y] = new Stack(new Stone(m.type, m.color));
 		EnumMap<Color, Integer> numStones = new EnumMap<Color, Integer>(this.numStones);
 		numStones.compute(m.color, (k, v) -> v - 1);
 		return new Board(array, numStones, m.color.other());
@@ -196,8 +194,8 @@ public class Board {
 	}*/
 	
 	private Board doMoveStack(MoveStack m) {
-		Optional<Stack>[][] array = deepCopy(boardArray);
-		Stack s = boardArray[m.x][m.y].get();
+		Stack[][] array = deepCopy(boardArray);
+		Stack s = boardArray[m.x][m.y];
 		
 		int row = m.x + m.dir.dx * m.dropCounts.length;
 		int col = m.y + m.dir.dy * m.dropCounts.length;
@@ -210,20 +208,20 @@ public class Board {
 			Stack miniStack = stacks[1]; // aka grabStack
 			s = stacks[0];
 			Stack remain = applyMiniStack(row, col, miniStack);
-			array[row][col] = Optional.of(remain);
+			array[row][col] = remain;
 		}
 		
-		array[m.x][m.y] = Optional.of(s);
+		array[m.x][m.y] = s;
 		
 		return new Board(array, this.numStones, m.color.other());
 	}
 	
 	private Stack applyMiniStack(int row, int col, Stack miniStack) {
-		Optional<Stack> current = boardArray[row][col];
-		if (!current.isPresent()) {
+		Stack current = boardArray[row][col];
+		if (current.isEmpty()) {
 			return miniStack;
 		}
-		return current.get().addOnTop(miniStack);
+		return current.addOnTop(miniStack);
 	}
 
 
@@ -233,7 +231,7 @@ public class Board {
 		return result;
 	}
 
-	public Optional<Stack>[][] getBoardArray() {
+	public Stack[][] getBoardArray() {
 		return deepCopy(boardArray);
 	}
 
@@ -246,7 +244,7 @@ public class Board {
 	}
 
 	public Board rotateBoard() {
-		@SuppressWarnings("unchecked") Optional<Stack>[][] array = new Optional[size][size];
+		@SuppressWarnings("unchecked") Stack[][] array = new Stack[size][size];
 		for (int i = 0; i < size; i++) {
 			for (int j = 0; j < size; j++) {
 				array[i][j] = boardArray[size - j - 1][i];
@@ -267,8 +265,8 @@ public class Board {
 		int n = 0;
 		for (int i = 0; i < size; i++) {
 			for (int j = 0; j < size; j++) {
-				Optional<Stack> val = boardArray[i][j];
-				if (val.map(Stack::top).filter(x -> x.color == c && x.type == PieceType.FLAT).isPresent())
+				Stack val = boardArray[i][j];
+				if (Optional.of(val).map(Stack::top).filter(x -> x.color == c && x.type == PieceType.FLAT).isPresent())
 					n++;
 			}
 		}

@@ -4,16 +4,17 @@ import java.util.Arrays;
 
 public class Stack {
 	private final Stone[] stones;
+	public final static Stack EMPTY = new Stack();
 
 	public Stack(Stone... stones) {
-		if (stones.length == 0) {
+		/*if (stones.length == 0) {
 			throw new RuntimeException("stacks cannot be empty");
-		}
+		}*/
 		this.stones = stones;
 	}
 	
 	public Stack[] split(int distanceDown) {
-		if (distanceDown == 0 || distanceDown == stones.length) {
+		/*if (distanceDown == 0 || distanceDown == stones.length) {
 			throw new RuntimeException("bad split size");
 		}*/
 		return new Stack[]{new Stack(Arrays.copyOfRange(stones, 0, stones.length - distanceDown)), new Stack(Arrays.copyOfRange(stones, stones.length - distanceDown, stones.length))};
@@ -34,6 +35,10 @@ public class Stack {
 	// hehe
 	public Stone top() {
 		return stones[stones.length-1];
+	}
+	
+	public boolean isEmpty() {
+		return stones.length == 0;
 	}
 
 }

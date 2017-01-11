@@ -4,6 +4,7 @@ import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.Writer;
+import java.util.Optional;
 import java.util.function.Function;
 
 public class GameLogger implements GameObserver {
@@ -41,7 +42,7 @@ public class GameLogger implements GameObserver {
 		for (int i=0; i<size; i++) {
 			b.append("|");
 			for (int j=0; j<size; j++) {
-				b.append(" "+board.getBoardArray()[i][j].map(Stack::top).map(x-> ((Function<String, String>) (x.type == PieceType.FLAT ? (Function<String, String>) (y -> y.toUpperCase()) : (Function<String, String>) (y -> y.toLowerCase()))).apply(x.color.name().substring(0,1))).orElse(" "));
+				b.append(" "+Optional.of(board.getBoardArray()[i][j]).map(Stack::top).map(x-> ((Function<String, String>) (x.type == PieceType.FLAT ? (Function<String, String>) (y -> y.toUpperCase()) : (Function<String, String>) (y -> y.toLowerCase()))).apply(x.color.name().substring(0,1))).orElse(" "));
 			}
 			b.append("|\n");
 		}

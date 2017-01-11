@@ -74,7 +74,7 @@ public class WinChecker {
 
 	private static boolean winCheck(Board board, Color c, Set<Position> visitedSet, Position curPos) {
 		if (visitedSet.contains(curPos) || !inBounds(board, curPos) ||
-				!board.getBoardArray()[curPos.x][curPos.y].map(Stack::top)
+				!Optional.of(board.getBoardArray()[curPos.x][curPos.y]).map(Stack::top)
 				.filter(x -> x.color == c && x.type == PieceType.FLAT).isPresent()) {
 			return false;
 		}
