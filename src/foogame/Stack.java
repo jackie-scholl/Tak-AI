@@ -43,5 +43,9 @@ public class Stack {
 	public boolean isEmpty() {
 		return stones.length == 0;
 	}
+	
+	public String toString() {
+		return Arrays.toString(stones);
+	}
 
 }

@@ -1,7 +1,5 @@
 package foogame;
 
-import java.util.Optional;
-
 public class Artificial {
 
 	static class Artifical1 implements Player {

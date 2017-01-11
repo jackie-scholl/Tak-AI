@@ -35,14 +35,21 @@ public class GameLogger implements GameObserver {
 		StringBuilder b = new StringBuilder();
 		Board board = update.board;
 		int size = board.size;
-		//print out new board
+		// print out new board
 		b.append(String.format("Last move: %s%n", update.last.ptn()));
 		b.append(String.format("Move by %s resulted in board:%n", update.last.color));
 		b.append("+----------+\n");
-		for (int i=0; i<size; i++) {
+		for (int i = 0; i < size; i++) {
 			b.append("|");
-			for (int j=0; j<size; j++) {
-				b.append(" "+Optional.of(board.getBoardArray()[i][j]).filter(x -> !x.isEmpty()).map(Stack::top).map(x-> ((Function<String, String>) (x.type == PieceType.FLAT ? (Function<String, String>) (y -> y.toUpperCase()) : (Function<String, String>) (y -> y.toLowerCase()))).apply(x.color.name().substring(0,1))).orElse(" "));
+			for (int j = 0; j < size; j++) {
+				b.append(" " + Optional.of(board.getBoardArray()[i][j])
+						.filter(x -> !x.isEmpty())
+						.map(Stack::top)
+						.map(x -> ((Function<String, String>) (x.type == PieceType.FLAT
+								? (Function<String, String>) (y -> y.toUpperCase())
+								: (Function<String, String>) (y -> y.toLowerCase())))
+										.apply(x.color.name().substring(0, 1)))
+						.orElse(" "));
 			}
 			b.append("|\n");
 		}

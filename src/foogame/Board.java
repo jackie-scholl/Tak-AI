@@ -187,20 +187,24 @@ public class Board {
 	
 	private Board doMoveStack(MoveStack m) {
 		Stack[][] array = deepCopy(boardArray);
-		Stack s = boardArray[m.x][m.y];
+		Stack s = array[m.x][m.y];
 		
-		int row = m.x + m.dir.dx * m.dropCounts.length;
-		int col = m.y + m.dir.dy * m.dropCounts.length;
+		int row = m.x + m.dir.dx * m.length;
+		int col = m.y + m.dir.dy * m.length;
 		
-		for (int i=m.dropCounts.length - 1; i >= 0; i--) {
-			row -= m.dir.dx;
-			col -= m.dir.dy;
+		for (int i=m.length - 1; i >= 0; i--) {
 			int grabThisTime = m.dropCounts[i];
+			System.out.printf("(%d, %d, %d)%n", row, col, grabThisTime);
 			Stack[] stacks = s.split(grabThisTime);
+			System.out.printf("Stacks: %s%n", Arrays.deepToString(stacks));
 			Stack miniStack = stacks[1]; // aka grabStack
 			s = stacks[0];
 			Stack remain = applyMiniStack(row, col, miniStack);
+			System.out.println(remain);
 			array[row][col] = remain;
+			
+			row -= m.dir.dx;
+			col -= m.dir.dy;
 		}
 		
 		array[m.x][m.y] = s;
