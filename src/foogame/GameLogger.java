@@ -60,14 +60,17 @@ public class GameLogger implements GameObserver {
 		// Tak Positional System (TPS)
 		StringBuilder tps = new StringBuilder();
 		
-		for (int i = size; i > 0; i--) {
-			tps.append("row" + i);
-			if (i != 1){
+		for (int i = 0; i < size; i++) {
+			for (int j = 0; j<size; j++){
+				tps.append(j+1);
+				if (j!= size-1){
+					tps.append(",");
+				}
+			}
+			if (i != size-1){
 				tps.append("/");
 			}
-			for (int j = 0; j<size; j++){
-				tps.append(""+(j+1));
-			}
+			
 		}
 		
 		return b.toString() + tps.toString();
