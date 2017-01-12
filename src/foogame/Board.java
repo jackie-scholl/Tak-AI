@@ -224,6 +224,10 @@ public class Board {
 		if (current.isEmpty()) {
 			return miniStack;
 		}
+		if (current.top().type == PieceType.WALL) {
+			// flatten the top
+			current = current.split(1)[0].addOnTop(new Stack(new Stone(PieceType.FLAT, current.top().color)));
+		}
 		return current.addOnTop(miniStack);
 	}
 
