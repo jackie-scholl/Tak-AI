@@ -335,7 +335,7 @@ public class Board {
 		int maxDistance = getMaxDistance(x, y, d);
 		
 		List<List<Integer>> possibleDropCounts = new ArrayList<>();
-		for (int i = 0; i < maxToMove; i++) {
+		for (int i = 0; i <= maxToMove; i++) {
 			int numberToMove = i;
 			//int numberRemaining = maxToMove - numberToMove;
 			List<List<Integer>> sub = getLegalMoveStacks(x, y, d, numberToMove, maxDistance);
