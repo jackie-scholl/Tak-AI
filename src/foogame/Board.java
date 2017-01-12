@@ -6,19 +6,21 @@ import java.util.stream.Stream;
 
 public class Board {
 	private final EnumMap<Color, Integer> numStones;
+	private final EnumMap<Color, Integer> numCapstones;
 	private final Stack[][] boardArray;
 	public final Color whoseTurn;
 	public final int size;
 
-	public Board(Stack[][] boardArray, EnumMap<Color, Integer> numStones, Color whoseTurn) {
+	public Board(Stack[][] boardArray, EnumMap<Color, Integer> numStones, EnumMap<Color, Integer> numCapstones, Color whoseTurn) {
 		this.numStones = new EnumMap<Color, Integer>(numStones);
+		this.numCapstones = new EnumMap<Color, Integer>(numCapstones);
 		this.boardArray = deepCopy(boardArray);
 		this.whoseTurn = whoseTurn;
 		this.size = boardArray.length;
 	}
 
 	public Board(Stack[][] boardArray) {
-		this(boardArray, baseNumStones(boardArray.length), Color.WHITE);
+		this(boardArray, baseNumStones(boardArray.length), baseNumCapstones(boardArray.length), Color.WHITE);
 	}
 
 	public Board(int size) {
@@ -27,6 +29,14 @@ public class Board {
 
 	private static EnumMap<Color, Integer> baseNumStones(int size) {
 		int numStonesToUse = size == 5 ? 21 : size == 6 ? 30 : -1;
+		EnumMap<Color, Integer> numStones = new EnumMap<Color, Integer>(Color.class);
+		numStones.put(Color.WHITE, numStonesToUse);
+		numStones.put(Color.BLACK, numStonesToUse);
+		return numStones;
+	}
+	
+	private static EnumMap<Color, Integer> baseNumCapstones(int size) {
+		int numStonesToUse = size < 7 ? 1 : 2;
 		EnumMap<Color, Integer> numStones = new EnumMap<Color, Integer>(Color.class);
 		numStones.put(Color.WHITE, numStonesToUse);
 		numStones.put(Color.BLACK, numStonesToUse);
@@ -69,7 +79,9 @@ public class Board {
 	}
 
 	private boolean isLegalPlaceStone(PlaceStone m) {
-		return inBounds(m) && numStones.get(m.color) != 0 && boardArray[m.x][m.y].isEmpty();
+		return inBounds(m) &&
+				(m.type.equals(PieceType.CAPSTONE) ? numCapstones.get(m.color) > 0 : numStones.get(m.color) > 0)
+				&& boardArray[m.x][m.y].isEmpty();
 	}
 
 	private boolean isLegalMoveStack(MoveStack m) {
@@ -85,6 +97,11 @@ public class Board {
 		Stack s = boardArray[m.x][m.y];
 		if (s.isEmpty()) {
 			System.out.println("nothing to move from");
+			return false;
+		}
+		
+		if (s.top().color != whoseTurn) {
+			System.out.println("You can't move someone else's stone");
 			return false;
 		}
 
@@ -170,9 +187,16 @@ public class Board {
 	private Board doPlaceStone(PlaceStone m) {
 		Stack[][] array = deepCopy(boardArray);
 		array[m.x][m.y] = new Stack(new Stone(m.type, m.color));
-		EnumMap<Color, Integer> numStones = new EnumMap<Color, Integer>(this.numStones);
-		numStones.compute(m.color, (k, v) -> v - 1);
-		return new Board(array, numStones, m.color.other());
+		EnumMap<Color, Integer> newNumStones = this.numStones;
+		EnumMap<Color, Integer> newNumCapstones = this.numCapstones;
+		if (m.type.equals(PieceType.CAPSTONE)) {
+			newNumCapstones = new EnumMap<Color, Integer>(this.numCapstones);
+			newNumCapstones.compute(m.color, (k, v) -> v - 1);
+		} else {
+			newNumStones = new EnumMap<Color, Integer>(this.numStones);
+			newNumStones.compute(m.color, (k, v) -> v - 1);
+		}
+		return new Board(array, newNumStones, newNumCapstones, m.color.other());
 	}
 
 	/*private Board doCapture(MoveStack m) {
@@ -213,7 +237,7 @@ public class Board {
 
 		array[m.x][m.y] = s;
 
-		return new Board(array, this.numStones, m.color.other());
+		return new Board(array, this.numStones, this.numCapstones, m.color.other());
 	}
 
 	private Stack applyMiniStack(int row, int col, Stack miniStack) {
@@ -253,7 +277,7 @@ public class Board {
 				array[i][j] = boardArray[size - j - 1][i];
 			}
 		}
-		return new Board(array, this.numStones, this.whoseTurn);
+		return new Board(array, this.numStones, this.numCapstones, this.whoseTurn);
 	}
 
 	public EnumMap<Color, Integer> numStonesOnBoard() {
@@ -338,8 +362,6 @@ public class Board {
 	}
 
 	private int getMaxDistance(int x, int y, Direction d) {
-		// int curX = x;
-		// int curY = y;
 		for (int i = 0; i < size + 1; i++) {
 			int curX = x + d.dx * i;
 			int curY = y + d.dy * i;
