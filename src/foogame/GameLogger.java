@@ -56,42 +56,39 @@ public class GameLogger implements GameObserver {
 		b.append("+----------+\n");
 		b.append(String.format("Num stones left: %s%n", board.getNumStones()));
 		b.append(String.format("Board spots: %s%n", board.numStonesOnBoard()));
-		
+
 		// Tak Positional System (TPS)
 		StringBuilder tps = new StringBuilder();
 		tps.append("[ TPS \"");
 		for (int i = 0; i < size; i++) {
-			for (int j = 0; j<size; j++){
+			for (int j = 0; j < size; j++) {
 				Stack stones = board.getBoardArray()[i][j];
-				if (!stones.isEmpty())
-				{
-					for (int r = 0;  r < stones.getCopy().length; r ++)
-					{	
+				if (!stones.isEmpty()) {
+					for (int r = 0; r < stones.getCopy().length; r++) {
 						Stone piece = stones.getCopy()[r];
-						if (piece.color == Color.WHITE)
+						if (piece.color == Color.WHITE) {
 							tps.append("1");
-						else
+						} else {
 							tps.append("2");
-						if (piece.type == PieceType.WALL)
-						{
+						}
+						if (piece.type == PieceType.WALL) {
 							tps.append("S");
 						}
-						if (piece.type == PieceType.CAPSTONE)
-						{
+						if (piece.type == PieceType.CAPSTONE) {
 							tps.append("C");
 						}
 					}
-				}
-				else
+				} else {
 					tps.append("x");
-				if (j!= size-1){
-					tps.append(",");	
+				}
+				if (j != size - 1) {
+					tps.append(",");
 				}
 			}
-			if (i != size-1){
+			if (i != size - 1) {
 				tps.append("/");
 			}
-			
+
 		}
 		int turn = board.whoseTurn == Color.WHITE ? 1 : 2;
 		tps.append(String.format(" %d 1 \"]", turn));
