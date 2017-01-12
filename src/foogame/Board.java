@@ -333,7 +333,18 @@ public class Board {
 	private Stream<Move> getLegalMoveStacks(int x, int y, Direction d) {
 		int maxToMove = boardArray[x][y].length();
 		int maxDistance = getMaxDistance(x, y, d);
-		List<List<Integer>> possibleDropCounts = getLegalMoveStacks(x, y, d, maxToMove, maxDistance);
+		
+		List<List<Integer>> possibleDropCounts = new ArrayList<>();
+		for (int i = 0; i < maxToMove; i++) {
+			int numberToMove = i;
+			//int numberRemaining = maxToMove - numberToMove;
+			List<List<Integer>> sub = getLegalMoveStacks(x, y, d, numberToMove, maxDistance);
+			for (List<Integer> arr : sub) {
+				possibleDropCounts.add(Collections.unmodifiableList(arr));
+			}
+		}
+		
+		//List<List<Integer>> possibleDropCounts = getLegalMoveStacks(x, y, d, maxToMove, maxDistance);
 		return possibleDropCounts.stream()
 				.map(Board::integerListToIntArray)
 				.map(counts -> new MoveStack(whoseTurn, x, y, d, counts));
