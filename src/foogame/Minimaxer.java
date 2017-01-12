@@ -81,7 +81,6 @@ public class Minimaxer implements Player {
 
 	private double heuristic(Board b) {
 		double a1 = 0;
-		//double a1 = b.getNumStones(us) - b.getNumStones(us.other());
 		double a2 = b.numStonesOnBoard(us) - b.numStonesOnBoard(us.other());
 		return a1 / 100 + a2 / 200;
 	}
