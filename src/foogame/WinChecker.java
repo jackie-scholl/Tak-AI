@@ -1,6 +1,7 @@
 package foogame;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class WinChecker {
 	public static Optional<Color> winCheck(Board b) {
@@ -10,8 +11,8 @@ public class WinChecker {
 	}
 
 	public static Optional<Color> winCheck2(Board b) {
-		return Optional.empty();
-		/*Color c = b.whoseTurn.other();
+		Color c = b.whoseTurn.other();
+		System.out.printf("winchecking for %s%n", c);
 		if (winCheck(b, c) || winCheck(b.rotateBoard(), c)) {
 			return Optional.of(c);
 		}
@@ -19,7 +20,7 @@ public class WinChecker {
 		if (!result.isPresent()) {
 			result = noMovesCheck(b);
 		}
-		return result;*/
+		return result;
 	}
 
 	/*public static Optional<Color> winCheck(Board b) {
@@ -57,7 +58,8 @@ public class WinChecker {
 	}
 	
 	private static Optional<Color> noMovesCheck(Board b) {
-		if (b.getLegalMoves().findAny().isPresent()) {
+		if (!b.getLegalMoves().findAny().isPresent()) {
+			System.out.println("no moves available; returning black");
 			return Optional.of(Color.BLACK); // If no moves available, give the win to Blue because reasons
 		}
 		return Optional.empty();
@@ -74,8 +76,9 @@ public class WinChecker {
 
 	private static boolean winCheck(Board board, Color c, Set<Position> visitedSet, Position curPos) {
 		if (visitedSet.contains(curPos) || !inBounds(board, curPos) ||
-				!Optional.of(board.getBoardArray()[curPos.x][curPos.y]).map(Stack::top)
-				.filter(x -> x.color == c && x.type == PieceType.FLAT).isPresent()) {
+				!Optional.of(board.getBoardArray()[curPos.x][curPos.y]).filter(x -> !x.isEmpty()).map(Stack::top)
+				.filter(x -> x.color == c && x.type != PieceType.WALL).isPresent()) {
+			//System.out.printf("false for %s at (%d, %d)%n", c, curPos.x, curPos.y);
 			return false;
 		}
 		if (curPos.y == board.size-1) {
