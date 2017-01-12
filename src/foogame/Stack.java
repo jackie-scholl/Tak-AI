@@ -44,6 +44,10 @@ public class Stack {
 		return stones.length == 0;
 	}
 	
+	public int length() {
+		return stones.length;
+	}
+	
 	public String toString() {
 		return Arrays.toString(stones);
 	}
