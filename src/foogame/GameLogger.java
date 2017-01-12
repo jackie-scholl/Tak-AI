@@ -69,17 +69,24 @@ public class GameLogger implements GameObserver {
 					{	
 						Stone piece = stones.getCopy()[r];
 						if (piece.color == Color.WHITE)
-						{
 							tps.append("1");
-						}
 						else
 							tps.append("2");
+						if (piece.type == PieceType.WALL)
+						{
+							tps.append("S");
+						}
+						if (piece.type == PieceType.CAPSTONE)
+						{
+							tps.append("C");
+						}
 					}
-				}
-				
-				if (j!= size-1){
-					tps.append(",");
 					
+				}
+				else
+					tps.append("x");
+				if (j!= size-1){
+					tps.append(",");	
 				}
 			}
 			if (i != size-1){
@@ -87,7 +94,8 @@ public class GameLogger implements GameObserver {
 			}
 			
 		}
-		tps.append("\" _turn_ _turn#_ ]");
+		int turn = board.whoseTurn == Color.WHITE ? 1 : 2;
+		tps.append(String.format("\" %d 1 ]", turn));
 		return b.toString() + tps.toString();
 				
 	}
