@@ -354,7 +354,7 @@ public class Board {
 			List<List<Integer>> sub = getLegalMoveStacks(x + d.dx, y + d.dy, d, numberToMove, maxDistance - 1);
 			for (List<Integer> arr : sub) {
 				List<Integer> temp = new ArrayList<>(arr);
-				temp.add(numberRemaining, 0);
+				temp.add(0, numberRemaining);
 				moveStacks.add(Collections.unmodifiableList(temp));
 			}
 		}
