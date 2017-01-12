@@ -11,3 +11,5 @@ bin/*
 *.class
 src/foogame/Artificial$Artifical2.class
 *.class
+*.class
+src/foogame/Artificial$Artifical2.class

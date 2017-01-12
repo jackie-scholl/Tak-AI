@@ -81,7 +81,6 @@ public class GameLogger implements GameObserver {
 							tps.append("C");
 						}
 					}
-					
 				}
 				else
 					tps.append("x");
@@ -97,6 +96,5 @@ public class GameLogger implements GameObserver {
 		int turn = board.whoseTurn == Color.WHITE ? 1 : 2;
 		tps.append(String.format(" %d 1 \"]", turn));
 		return b.toString() + tps.toString();
-				
 	}
 }
