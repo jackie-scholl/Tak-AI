@@ -1,8 +1,6 @@
 package foogame;
 
-import java.util.Arrays;
-import java.util.EnumMap;
-import java.util.Optional;
+import java.util.*;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
 
@@ -73,7 +71,7 @@ public class Board {
 	private boolean isLegalPlaceStone(PlaceStone m) {
 		return inBounds(m) && numStones.get(m.color) != 0 && boardArray[m.x][m.y].isEmpty();
 	}
-	
+
 	private boolean isLegalMoveStack(MoveStack m) {
 		if (m.count > size || m.count < 1) {
 			System.out.println("bad count");
@@ -83,16 +81,16 @@ public class Board {
 			System.out.println("out of bounds");
 			return false;
 		}
-		
+
 		Stack s = boardArray[m.x][m.y];
 		if (s.isEmpty()) {
 			System.out.println("nothing to move from");
 			return false;
 		}
-		
+
 		int row = m.x + m.dir.dx * m.dropCounts.length;
 		int col = m.y + m.dir.dy * m.dropCounts.length;
-		
+
 		for (int i = m.dropCounts.length - 1; i >= 0; i--) {
 			int grabThisTime = m.dropCounts[i];
 			Stack[] stacks = s.split(grabThisTime);
@@ -105,31 +103,31 @@ public class Board {
 			row -= m.dir.dx;
 			col -= m.dir.dy;
 		}
-		
+
 		return true;
 	}
-	
+
 	private boolean isLegalMiniStack(int row, int col, Stack miniStack) {
 		if (!inBounds(row) || !inBounds(col)) {
 			System.out.println("out of bounds  2");
 			return false;
 		}
-		
+
 		if (boardArray[row][col].isEmpty()) {
 			return true;
 		}
-		
+
 		PieceType t = boardArray[row][col].top().type;
-		
+
 		if (t == PieceType.CAPSTONE) {
 			System.out.println("can't move onto capstone");
 			return false;
 		}
-		
+
 		if (t == PieceType.FLAT) {
 			return true;
 		}
-		
+
 		if (t == PieceType.WALL) {
 			if (miniStack.getCopy()[0].type == PieceType.CAPSTONE) {
 				System.out.println("can't move onto wall unless ur a capstone");
@@ -137,20 +135,19 @@ public class Board {
 			}
 			return false;
 		}
-		
+
 		throw new RuntimeException("Impossible!");
 	}
-	
-	
+
 	private boolean inBounds(PlaceStone m) {
 		return inBounds(m.x) && inBounds(m.y);
 	}
 
 	private boolean inBounds(MoveStack m) {
 		return inBounds(m.x)
-			&& inBounds(m.y)
-			&& inBounds(m.x + m.dir.dx * m.dropCounts.length)
-			&& inBounds(m.y + m.dir.dy * m.dropCounts.length);
+				&& inBounds(m.y)
+				&& inBounds(m.x + m.dir.dx * m.dropCounts.length)
+				&& inBounds(m.y + m.dir.dy * m.dropCounts.length);
 	}
 
 	public boolean inBounds(int x) {
@@ -191,14 +188,14 @@ public class Board {
 		}
 		return new Board(array, this.numStones, m.color.other());
 	}*/
-	
+
 	private Board doMoveStack(MoveStack m) {
 		Stack[][] array = deepCopy(boardArray);
 		Stack s = array[m.x][m.y];
-		
+
 		int row = m.x + m.dir.dx * m.length;
 		int col = m.y + m.dir.dy * m.length;
-		
+
 		for (int i = m.length - 1; i >= 0; i--) {
 			int grabThisTime = m.dropCounts[i];
 			System.out.printf("(%d, %d, %d)%n", row, col, grabThisTime);
@@ -209,16 +206,16 @@ public class Board {
 			Stack remain = applyMiniStack(row, col, miniStack);
 			System.out.println(remain);
 			array[row][col] = remain;
-			
+
 			row -= m.dir.dx;
 			col -= m.dir.dy;
 		}
-		
+
 		array[m.x][m.y] = s;
-		
+
 		return new Board(array, this.numStones, m.color.other());
 	}
-	
+
 	private Stack applyMiniStack(int row, int col, Stack miniStack) {
 		Stack current = boardArray[row][col];
 		if (current.isEmpty()) {
@@ -231,9 +228,8 @@ public class Board {
 		return current.addOnTop(miniStack);
 	}
 
-
 	public Optional<Color> hasAnyoneWon() {
-		//Optional<Color> result = WinChecker.winCheck(this);
+		// Optional<Color> result = WinChecker.winCheck(this);
 		Optional<Color> result = WinChecker.winCheck2(this);
 		return result;
 	}
