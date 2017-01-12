@@ -86,22 +86,22 @@ public class Board {
 
 	private boolean isLegalMoveStack(MoveStack m) {
 		if (m.count > size || m.count < 1) {
-			System.out.println("bad count");
+			//System.out.println("bad count");
 			return false;
 		}
 		if (!inBounds(m)) {
-			System.out.println("out of bounds");
+			//System.out.println("out of bounds");
 			return false;
 		}
 
 		Stack s = boardArray[m.x][m.y];
 		if (s.isEmpty()) {
-			System.out.println("nothing to move from");
+			//System.out.println("nothing to move from");
 			return false;
 		}
 		
 		if (s.top().color != whoseTurn) {
-			System.out.println("You can't move someone else's stone");
+			//System.out.println("You can't move someone else's stone");
 			return false;
 		}
 
@@ -114,7 +114,7 @@ public class Board {
 			Stack miniStack = stacks[1]; // aka grabStack
 			s = stacks[0];
 			if (!isLegalMiniStack(row, col, miniStack)) {
-				System.out.println("illegal ministack");
+				//System.out.println("illegal ministack");
 				return false;
 			}
 			row -= m.dir.dx;
@@ -126,7 +126,7 @@ public class Board {
 
 	private boolean isLegalMiniStack(int row, int col, Stack miniStack) {
 		if (!inBounds(row) || !inBounds(col)) {
-			System.out.println("out of bounds  2");
+			//System.out.println("out of bounds  2");
 			return false;
 		}
 
@@ -137,7 +137,7 @@ public class Board {
 		PieceType t = boardArray[row][col].top().type;
 
 		if (t == PieceType.CAPSTONE) {
-			System.out.println("can't move onto capstone");
+			//System.out.println("can't move onto capstone");
 			return false;
 		}
 
@@ -147,7 +147,7 @@ public class Board {
 
 		if (t == PieceType.WALL) {
 			if (miniStack.getCopy()[0].type == PieceType.CAPSTONE) {
-				System.out.println("can't move onto wall unless ur a capstone");
+				//System.out.println("can't move onto wall unless ur a capstone");
 				return true;
 			}
 			return false;
@@ -222,13 +222,13 @@ public class Board {
 
 		for (int i = m.length - 1; i >= 0; i--) {
 			int grabThisTime = m.dropCounts[i];
-			System.out.printf("(%d, %d, %d)%n", row, col, grabThisTime);
+			//System.out.printf("(%d, %d, %d)%n", row, col, grabThisTime);
 			Stack[] stacks = s.split(grabThisTime);
-			System.out.printf("Stacks: %s%n", Arrays.deepToString(stacks));
+			//System.out.printf("Stacks: %s%n", Arrays.deepToString(stacks));
 			Stack miniStack = stacks[1]; // aka grabStack
 			s = stacks[0];
 			Stack remain = applyMiniStack(row, col, miniStack);
-			System.out.println(remain);
+			//System.out.println(remain);
 			array[row][col] = remain;
 
 			row -= m.dir.dx;
