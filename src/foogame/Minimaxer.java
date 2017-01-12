@@ -44,6 +44,7 @@ public class Minimaxer implements Player {
 			return heuristic(node);
 		}
 		List<Board> boards = node.getLegalMoves().map(node::makeMove).collect(Collectors.toList());
+		Collections.shuffle(boards);
 		if (node.whoseTurn == us) {
 			double v = Double.NEGATIVE_INFINITY;
 			Collections.sort(boards, (x, y) -> Double.compare(heuristic(y), heuristic(x)));
