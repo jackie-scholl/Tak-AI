@@ -19,11 +19,18 @@ public class Minimaxer implements Player {
 	public void acceptUpdate(GameUpdate update) {}
 
 	public Move getMove(Board board) {
+		long start = System.currentTimeMillis();
+		
 		this.us = board.whoseTurn;
-		return board.getLegalMoves().parallel()
+		Move move = board.getLegalMoves().parallel()
 				.map(m -> new MoveScorePair(
 						alphabeta(board.makeMove(m), depth, Double.NEGATIVE_INFINITY, Double.POSITIVE_INFINITY), m))
 				.max((x, y) -> Double.compare(x.score, y.score)).get().move;
+		
+		long end = System.currentTimeMillis();
+		double difference = (end-start)/1000.0;
+		System.out.printf("Time taken: %.1f seconds%n", difference);
+		return move;
 	}
 
 	private static class MoveScorePair {
@@ -74,7 +81,6 @@ public class Minimaxer implements Player {
 
 	private double heuristic(Board b) {
 		double a1 = 0;
-		//double a1 = b.getNumStones(us) - b.getNumStones(us.other());
 		double a2 = b.numStonesOnBoard(us) - b.numStonesOnBoard(us.other());
 		return a1 / 100 + a2 / 200;
 	}
