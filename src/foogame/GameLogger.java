@@ -59,12 +59,27 @@ public class GameLogger implements GameObserver {
 		
 		// Tak Positional System (TPS)
 		StringBuilder tps = new StringBuilder();
-		
+		tps.append("[ TPS \"");
 		for (int i = 0; i < size; i++) {
 			for (int j = 0; j<size; j++){
-				tps.append(j+1);
+				Stack stones = board.getBoardArray()[i][j];
+				if (!stones.isEmpty())
+				{
+					for (int r = 0;  r < stones.getCopy().length; r ++)
+					{	
+						Stone piece = stones.getCopy()[r];
+						if (piece.color == Color.WHITE)
+						{
+							tps.append("1");
+						}
+						else
+							tps.append("2");
+					}
+				}
+				
 				if (j!= size-1){
 					tps.append(",");
+					
 				}
 			}
 			if (i != size-1){
@@ -72,7 +87,7 @@ public class GameLogger implements GameObserver {
 			}
 			
 		}
-		
+		tps.append("\" _turn_ _turn#_ ]");
 		return b.toString() + tps.toString();
 				
 	}
