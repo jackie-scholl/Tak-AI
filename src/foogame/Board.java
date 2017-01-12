@@ -10,17 +10,19 @@ public class Board {
 	private final Stack[][] boardArray;
 	public final Color whoseTurn;
 	public final int size;
+	public final int turnNumber;
 
-	public Board(Stack[][] boardArray, EnumMap<Color, Integer> numStones, EnumMap<Color, Integer> numCapstones, Color whoseTurn) {
+	public Board(Stack[][] boardArray, EnumMap<Color, Integer> numStones, EnumMap<Color, Integer> numCapstones, Color whoseTurn, int turnNumber) {
 		this.numStones = new EnumMap<Color, Integer>(numStones);
 		this.numCapstones = new EnumMap<Color, Integer>(numCapstones);
 		this.boardArray = deepCopy(boardArray);
 		this.whoseTurn = whoseTurn;
 		this.size = boardArray.length;
+		this.turnNumber = turnNumber;
 	}
 
 	public Board(Stack[][] boardArray) {
-		this(boardArray, baseNumStones(boardArray.length), baseNumCapstones(boardArray.length), Color.WHITE);
+		this(boardArray, baseNumStones(boardArray.length), baseNumCapstones(boardArray.length), Color.WHITE, 0);
 	}
 
 	public Board(int size) {
@@ -196,7 +198,7 @@ public class Board {
 			newNumStones = new EnumMap<Color, Integer>(this.numStones);
 			newNumStones.compute(m.color, (k, v) -> v - 1);
 		}
-		return new Board(array, newNumStones, newNumCapstones, m.color.other());
+		return new Board(array, newNumStones, newNumCapstones, m.color.other(), this.turnNumber + 1);
 	}
 
 	/*private Board doCapture(MoveStack m) {
@@ -237,7 +239,7 @@ public class Board {
 
 		array[m.x][m.y] = s;
 
-		return new Board(array, this.numStones, this.numCapstones, m.color.other());
+		return new Board(array, this.numStones, this.numCapstones, m.color.other(), this.turnNumber + 1);
 	}
 
 	private Stack applyMiniStack(int row, int col, Stack miniStack) {
@@ -277,7 +279,7 @@ public class Board {
 				array[i][j] = boardArray[size - j - 1][i];
 			}
 		}
-		return new Board(array, this.numStones, this.numCapstones, this.whoseTurn);
+		return new Board(array, this.numStones, this.numCapstones, this.whoseTurn, this.turnNumber);
 	}
 
 	public EnumMap<Color, Integer> numStonesOnBoard() {
