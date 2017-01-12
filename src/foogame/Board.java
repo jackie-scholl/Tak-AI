@@ -286,11 +286,71 @@ public class Board {
 
 	public Stream<Move> getLegalMoves() {
 		return Stream.concat(
-				Stream.concat(Position.positionStream(size).map(x -> new PlaceStone(whoseTurn, x.x, x.y, PieceType.FLAT)),
-					Position.positionStream(size).map(x -> new PlaceStone(whoseTurn, x.x, x.y, PieceType.WALL))),
-				Position.positionStream(size).flatMap(
-						x -> Arrays.stream(Direction.values()).map(d -> new MoveStack(whoseTurn, x.x, x.y, d, 1))))
+				Stream.concat(
+				Stream.concat(
+						Position.positionStream(size).map(x -> new PlaceStone(whoseTurn, x.x, x.y, PieceType.FLAT)),
+						Position.positionStream(size).map(x -> new PlaceStone(whoseTurn, x.x, x.y, PieceType.WALL))),
+						Position.positionStream(size).map(x -> new PlaceStone(whoseTurn, x.x, x.y, PieceType.CAPSTONE))),
+						getLegalMoveStacks())
+				/*Position.positionStream(size).flatMap(
+						x -> Arrays.stream(Direction.values()).map(d -> new MoveStack(whoseTurn, x.x, x.y, d, 1))))*/
 				// TODO: *actually* iterate through all possible stack moves
 				.filter(this::isLegalMove);
+	}
+
+	private Stream<Move> getLegalMoveStacks() {
+		return Position.positionStream(size)
+				.filter(x -> !boardArray[x.x][x.y].isEmpty())
+				.filter(x -> boardArray[x.x][x.y].top().color == whoseTurn)
+				.flatMap(x -> getLegalMoveStacks(x.x, x.y))
+				.filter(this::isLegalMove);
+	}
+
+	private Stream<Move> getLegalMoveStacks(int x, int y) {
+		return Arrays.stream(Direction.values()).flatMap(d -> getLegalMoveStacks(x, y, d));
+	}
+
+	private Stream<Move> getLegalMoveStacks(int x, int y, Direction d) {
+		int maxToMove = boardArray[x][y].length();
+		int maxDistance = getMaxDistance(x, y, d);
+		List<List<Integer>> possibleDropCounts = getLegalMoveStacks(x, y, d, maxToMove, maxDistance);
+		return possibleDropCounts.stream()
+				.map(Board::integerListToIntArray)
+				.map(counts -> new MoveStack(whoseTurn, x, y, d, counts));
+	}
+
+	private static int[] integerListToIntArray(List<Integer> l) {
+		return l.stream().mapToInt(x -> x).toArray();
+	}
+
+	private List<List<Integer>> getLegalMoveStacks(int x, int y, Direction d, int maxToMove, int maxDistance) {
+		if (maxDistance == 0 || maxToMove == 0) {
+			return Collections.unmodifiableList(Arrays.asList(Collections.emptyList()));
+		}
+		List<List<Integer>> moveStacks = new ArrayList<>();
+		for (int i = 0; i < maxToMove; i++) {
+			int numberToMove = i;
+			int numberRemaining = maxToMove - numberToMove;
+			List<List<Integer>> sub = getLegalMoveStacks(x + d.dx, y + d.dy, d, numberToMove, maxDistance - 1);
+			for (List<Integer> arr : sub) {
+				List<Integer> temp = new ArrayList<>(arr);
+				temp.add(numberRemaining, 0);
+				moveStacks.add(Collections.unmodifiableList(temp));
+			}
+		}
+		return moveStacks;
+	}
+
+	private int getMaxDistance(int x, int y, Direction d) {
+		// int curX = x;
+		// int curY = y;
+		for (int i = 0; i < size + 1; i++) {
+			int curX = x + d.dx * i;
+			int curY = y + d.dy * i;
+			if (!inBounds(curX) || !inBounds(curY)) {
+				return i;
+			}
+		}
+		throw new RuntimeException();
 	}
 }
