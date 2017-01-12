@@ -19,7 +19,7 @@ public class TUIPlayer implements Player {
 		}
 		System.out.println("+----------+");
 		System.out.printf("Num stones left: %s%n", update.board.getNumStones());*/
-		System.out.println(GameLogger.stringifyUpdate(update));
+		//System.out.println(GameLogger.stringifyUpdate(update));
 	}
 
 	public Move getMove(Board board) {

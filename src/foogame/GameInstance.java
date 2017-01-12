@@ -68,6 +68,7 @@ public class GameInstance {
 		Player player2 = parsePlayer(args[1]);
 		GameInstance game = new GameInstance(player1, player2);
 		game.registerObserver(new GameLogger("game.out.txt"));
+		game.registerObserver(new GameLogger(System.console().writer()));
 		game.runFull();
 		long end = System.nanoTime();
 		System.out.printf("Time: %f seconds%n", (end-start)/1.0e9);
