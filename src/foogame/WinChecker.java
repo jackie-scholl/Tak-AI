@@ -12,7 +12,7 @@ public class WinChecker {
 
 	public static Optional<Color> winCheck2(Board b) {
 		Color c = b.whoseTurn.other();
-		System.out.printf("winchecking for %s%n", c);
+		//System.out.printf("winchecking for %s%n", c);
 		if (winCheck(b, c) || winCheck(b.rotateBoard(), c)) {
 			return Optional.of(c);
 		}
