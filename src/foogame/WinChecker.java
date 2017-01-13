@@ -1,7 +1,6 @@
 package foogame;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 public class WinChecker {
 	public static Optional<Color> winCheck(Board b) {
@@ -18,7 +17,8 @@ public class WinChecker {
 		}
 		Optional<Color> result = numStonesCheck(b);
 		if (!result.isPresent()) {
-			result = noMovesCheck(b);
+			//result = noMovesCheck(b);
+			result = boardFullCheck(b);
 		}
 		return result;
 	}
@@ -61,6 +61,13 @@ public class WinChecker {
 		if (!b.getLegalMoves().findAny().isPresent()) {
 			System.out.println("no moves available; returning black");
 			return Optional.of(Color.BLACK); // If no moves available, give the win to Blue because reasons
+		}
+		return Optional.empty();
+	}
+	
+	private static Optional<Color> boardFullCheck(Board b) {
+		if (!Position.positionStream(b.size).map(x -> b.getBoardArray()[x.x][x.y]).filter(Stack::isEmpty).findAny().isPresent()) {
+			return Optional.of(Color.BLACK);
 		}
 		return Optional.empty();
 	}
