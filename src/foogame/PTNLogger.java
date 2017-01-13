@@ -44,6 +44,10 @@ public class PTNLogger implements GameObserver {
 		}
 	}
 
+	public void ptnComment(String in) {
+		ptn.append("{" + in + "}%n");
+	}
+
 	public String headerTag() {
 		StringBuilder header = new StringBuilder();
 		header.append(String.format("[Site \"Tak_ISP\"]%n"));
