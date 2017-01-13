@@ -63,7 +63,7 @@ public class Minimaxer implements Player {
 					break;
 				}
 			}
-			return v;
+			return v*0.95;
 		} else {
 			double v = Double.POSITIVE_INFINITY;
 			Collections.sort(boards, (x, y) -> Double.compare(heuristic(x), heuristic(y)));
@@ -75,7 +75,7 @@ public class Minimaxer implements Player {
 					break;
 				}
 			}
-			return v;
+			return v*0.95;
 		}
 	}
 
