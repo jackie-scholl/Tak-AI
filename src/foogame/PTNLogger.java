@@ -45,26 +45,37 @@ public class PTNLogger implements GameObserver {
 
 	public String headerTag() {
 		StringBuilder header = new StringBuilder();
-		header.append(String.format("[Event \"Tak_ISP\"]%n"));
+		header.append(String.format("[Site \"Tak_ISP\"]%n"));
 		header.append(String.format("[Player1 \"White\"]%n"));
 		header.append(String.format("[Player2 \"Black\"]%n"));
 		Date curDate = new Date();
 		SimpleDateFormat format = new SimpleDateFormat("yyyy.MM.dd");
 		header.append(String.format("[Date \"%s\"]%n", format.format(curDate)));
+		format = new SimpleDateFormat("HH:mm:ss");
+		header.append(String.format("[Time \"%s\"]%n", format.format(curDate)));
 		return header.toString();
 	}
 
 	public String resultTag(GameUpdate update) {
-		if (update.board.hasAnyoneWon().get() == Color.WHITE) {
-			return String.format("[Result \"F-0\"]%n");
+		Boolean whiteWin = (update.board.hasAnyoneWon().get() == Color.WHITE);
+		for (Color c : Color.values()) {
+			if (update.board.getNumStones(c) == 0) {
+				if (whiteWin) {
+					return String.format("[Result \"F-0\"]%n");
+				}
+				return String.format("[Result \"0-F\"]%n");
+			}
 		}
-		return String.format("[Result \"0-F\"]%n");
+		if (whiteWin) {
+			return String.format("[Result \"R-0\"]%n");
+		}
+		return String.format("[Result \"0-R\"]%n");
 	}
 
 	public String writePTN(String in, int turn) {
 		String out = "";
 		if (first) {
-			out += (turn+1) + ". " + in;
+			out += (turn + 1) + ". " + in;
 		} else {
 			out += " " + in + "%n";
 		}
