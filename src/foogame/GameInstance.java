@@ -1,6 +1,7 @@
 package foogame;
 
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.util.*;
 
 public class GameInstance {
@@ -68,7 +69,7 @@ public class GameInstance {
 		Player player2 = parsePlayer(args[1]);
 		GameInstance game = new GameInstance(player1, player2);
 		game.registerObserver(new GameLogger("game.out.txt"));
-		game.registerObserver(new GameLogger(System.console().writer()));
+		game.registerObserver(new GameLogger(new PrintWriter(System.out)));
 		game.registerObserver(new PTNLogger("game.out.ptn"));
 		game.runFull();
 		long end = System.nanoTime();

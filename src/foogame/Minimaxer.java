@@ -22,14 +22,26 @@ public class Minimaxer implements Player {
 		long start = System.currentTimeMillis();
 		
 		this.us = board.whoseTurn;
-		Move move = board.getLegalMoves().parallel()
+		MoveScorePair moveScorePair = board.getLegalMoves().parallel()
 				.map(m -> new MoveScorePair(
 						alphabeta(board.makeMove(m), depth, Double.NEGATIVE_INFINITY, Double.POSITIVE_INFINITY), m))
-				.max((x, y) -> Double.compare(x.score, y.score)).get().move;
+				.max((x, y) -> Double.compare(x.score, y.score)).get();
+		
+		double score = moveScorePair.score;
+		
+		//System.out.print(score);
+		if (score < -0.5) {
+			System.out.println("Oh no! They have tinue!");
+			//PTNLogger.ptnComment("Oh no! They have tinue!");
+		} else if (score > 0.5) {
+			System.out.println("Yay! We have tinue!");
+		}
+		
+		Move move = moveScorePair.move;
 		
 		long end = System.currentTimeMillis();
 		double difference = (end-start)/1000.0;
-		System.out.printf("Time taken: %.1f seconds%n", difference);
+		System.out.printf("Time taken: %.1f seconds; score: %.3f%n", difference, score);
 		return move;
 	}
 
@@ -51,7 +63,8 @@ public class Minimaxer implements Player {
 			return heuristic(node);
 		}
 		List<Board> boards = node.getLegalMoves().map(node::makeMove).collect(Collectors.toList());
-		Collections.shuffle(boards);
+		long seed = System.nanoTime();
+		Collections.shuffle(boards, new Random(seed));
 		if (node.whoseTurn == us) {
 			double v = Double.NEGATIVE_INFINITY;
 			Collections.sort(boards, (x, y) -> Double.compare(heuristic(y), heuristic(x)));
@@ -63,7 +76,7 @@ public class Minimaxer implements Player {
 					break;
 				}
 			}
-			return v*0.95;
+			return v*0.98;
 		} else {
 			double v = Double.POSITIVE_INFINITY;
 			Collections.sort(boards, (x, y) -> Double.compare(heuristic(x), heuristic(y)));
@@ -75,7 +88,7 @@ public class Minimaxer implements Player {
 					break;
 				}
 			}
-			return v*0.95;
+			return v*0.98;
 		}
 	}
 
