@@ -4,11 +4,13 @@ import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.Writer;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 public class PTNLogger implements GameObserver {
 	private final BufferedWriter writer;
-	private boolean first = false;
-	private StringBuilder tps;
+	private boolean first = true;
+	private StringBuilder ptn;
 
 	public PTNLogger(String fileName) throws IOException {
 		this(new FileWriter(fileName));
@@ -20,26 +22,23 @@ public class PTNLogger implements GameObserver {
 
 	public PTNLogger(BufferedWriter writer) {
 		this.writer = writer;
-		this.tps = new StringBuilder();
+		this.ptn = new StringBuilder();
 	}
 
 	public void acceptUpdate(GameUpdate update) {
-		if (update.board.turnNumber != 1) {
-			if (!update.board.hasAnyoneWon().isPresent()) {
-				tps.append(writePTN(update.last.ptn(), update.board.turnNumber / 2));
-			} else {
-				try {
-					tps.append(writePTN(update.last.ptn(), update.board.turnNumber / 2));
+		if (!update.board.hasAnyoneWon().isPresent()) {
+			ptn.append(writePTN(update.last.ptn(), update.board.turnNumber / 2));
+		} else {
+			try {
+				ptn.append(writePTN(update.last.ptn(), update.board.turnNumber / 2));
 
-					writer.write(headerTag());
-					writer.write(resultTag(update));
-					writer.flush();
-					writer.write(String.format("[Size N\"%d\"]%n", update.board.size));
-					writer.write(tps.toString());
-					writer.flush();
-				} catch (IOException e) {
-					throw new RuntimeException(e);
-				}
+				writer.write(headerTag());
+				writer.write(resultTag(update));
+				writer.write(String.format("[Size \"%d\"]%n", update.board.size));
+				writer.write(String.format("%n" + ptn.toString() + "\""));
+				writer.flush();
+			} catch (IOException e) {
+				throw new RuntimeException(e);
 			}
 		}
 	}
@@ -49,7 +48,9 @@ public class PTNLogger implements GameObserver {
 		header.append(String.format("[Event \"Tak_ISP\"]%n"));
 		header.append(String.format("[Player1 \"White\"]%n"));
 		header.append(String.format("[Player2 \"Black\"]%n"));
-		header.append(String.format("[Time \"%d\"]%n", System.currentTimeMillis()));
+		Date curDate = new Date();
+		SimpleDateFormat format = new SimpleDateFormat("yyyy.MM.dd");
+		header.append(String.format("[Date \"%s\"]%n", format.format(curDate)));
 		return header.toString();
 	}
 
@@ -63,7 +64,7 @@ public class PTNLogger implements GameObserver {
 	public String writePTN(String in, int turn) {
 		String out = "";
 		if (first) {
-			out += turn + ". " + in;
+			out += (turn+1) + ". " + in;
 		} else {
 			out += " " + in + "%n";
 		}
