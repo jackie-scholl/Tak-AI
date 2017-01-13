@@ -43,6 +43,10 @@ public class PTNLogger implements GameObserver {
 			}
 		}
 	}
+	
+	public void ptnComment(String in) {
+		ptn.append("{" + in  + "}");
+	}
 
 	public String headerTag() {
 		StringBuilder header = new StringBuilder();
