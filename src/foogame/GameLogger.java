@@ -24,7 +24,7 @@ public class GameLogger implements GameObserver {
 
 	public void acceptUpdate(GameUpdate update) {
 		try {
-			writer.write(stringifyUpdate(update));
+			writer.write(stringifyUpdate(update) + stringTPS(update));
 			writer.flush();
 		} catch (IOException e) {
 			throw new RuntimeException(e);
@@ -56,9 +56,16 @@ public class GameLogger implements GameObserver {
 		b.append(String.format("Num stones left: %s%n", board.getNumStones()));
 		b.append(String.format("Board spots: %s%n", board.numStonesOnBoard()));
 
+		return b.toString();
+	}
+
+	public static String stringTPS(GameUpdate update)
+	{
+		Board board = update.board;
+		int size = board.size;
 		// Tak Positional System (TPS)
 		StringBuilder tps = new StringBuilder();
-		tps.append("[ TPS \"");
+		tps.append("[TPS \"");
 		for (int i = 0; i < size; i++) {
 			for (int j = 0; j < size; j++) {
 				Stack stones = board.getBoardArray()[i][j];
@@ -91,6 +98,6 @@ public class GameLogger implements GameObserver {
 		}
 		int turn = board.whoseTurn == Color.WHITE ? 1 : 2;
 		tps.append(String.format(" %d 1\"]%n", turn));
-		return b.toString() + tps.toString() + "---------------------\n";
+		return tps.toString();
 	}
 }
