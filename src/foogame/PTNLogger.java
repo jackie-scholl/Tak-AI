@@ -10,7 +10,7 @@ import java.util.Date;
 public class PTNLogger implements GameObserver {
 	private final BufferedWriter writer;
 	private boolean first = true;
-	private StringBuilder ptn;
+	private static StringBuilder ptn;
 
 	public PTNLogger(String fileName) throws IOException {
 		this(new FileWriter(fileName));
@@ -44,7 +44,7 @@ public class PTNLogger implements GameObserver {
 		}
 	}
 	
-	public void ptnComment(String in) {
+	public static void ptnComment(String in) {
 		ptn.append("{" + in  + "}");
 	}
 
