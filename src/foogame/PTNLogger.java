@@ -35,6 +35,7 @@ public class PTNLogger implements GameObserver {
 				writer.write(headerTag());
 				writer.write(resultTag(update));
 				writer.write(String.format("[Size \"%d\"]%n", update.board.size));
+				writer.write(String.format(GameLogger.stringTPS(update) + "%n"));
 				writer.write(String.format("%n" + ptn.toString() + "\""));
 				writer.flush();
 			} catch (IOException e) {
