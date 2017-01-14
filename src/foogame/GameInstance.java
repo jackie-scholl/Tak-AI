@@ -8,6 +8,7 @@ public class GameInstance {
 	private final EnumMap<Color, Player> players;
 	private final Set<GameObserver> observers;
 	private Board board;
+	public final static boolean SILENT = true;
 	
 	public GameInstance(Player redPlayer, Player bluePlayer) {
 		this(getEnumMap(redPlayer, bluePlayer));
@@ -69,11 +70,13 @@ public class GameInstance {
 		Player player2 = parsePlayer(args[1]);
 		GameInstance game = new GameInstance(player1, player2);
 		game.registerObserver(new GameLogger("game.out.txt"));
-		game.registerObserver(new GameLogger(new PrintWriter(System.out)));
+		if (!SILENT) {
+			game.registerObserver(new GameLogger(new PrintWriter(System.out)));
+		}
 		game.registerObserver(new PTNLogger("game.out.ptn"));
 		game.runFull();
 		long end = System.nanoTime();
-		System.out.printf("Time: %f seconds%n", (end-start)/1.0e9);
+		System.out.printf("Time: %f seconds; # moves: %d%n", (end-start)/1.0e9, game.board.turnNumber);
 	}
 	
 	private static Player parsePlayer(String s) {
