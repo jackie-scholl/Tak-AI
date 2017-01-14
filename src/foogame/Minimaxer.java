@@ -22,9 +22,20 @@ public class Minimaxer implements Player {
 		long start = System.currentTimeMillis();
 		
 		this.us = board.whoseTurn;
-		MoveScorePair moveScorePair = board.getLegalMoves().parallel()
+		/*MoveScorePair moveScorePair = board.getLegalMoves().parallel()
 				.map(m -> createMoveScorePair(board, m))
-				.max((x, y) -> Double.compare(x.score, y.score)).get();
+				.max((x, y) -> Double.compare(x.score, y.score)).get();*/
+		
+		List<MoveScorePair> moveScorePairs = board.getLegalMoves().parallel()
+				.map(m -> createMoveScorePair(board, m))
+				.collect(Collectors.toList());
+				//.max((x, y) -> Double.compare(x.score, y.score)).get();
+		Collections.shuffle(moveScorePairs);
+		
+		MoveScorePair moveScorePair = moveScorePairs
+				.stream()
+				.max((x, y) -> Double.compare(x.score, y.score))
+				.get();
 		
 		Move move = moveScorePair.move;
 		double score = moveScorePair.score;
