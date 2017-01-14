@@ -80,9 +80,9 @@ public class PTNLogger implements GameObserver {
 	public String writePTN(String in, int turn) {
 		String out = "";
 		if (first) {
-			out += (turn + 1) + ". " + in;
+			out += "%n" + (turn + 1) + ". " + in;
 		} else {
-			out += " " + in + "%n";
+			out += " " + in;
 		}
 		first = (first) ? false : true;
 		return out;
