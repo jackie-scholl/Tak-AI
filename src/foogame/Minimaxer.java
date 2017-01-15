@@ -112,13 +112,19 @@ public class Minimaxer implements Player {
 	
 	private static List<Board> getBoards(Board node) {
 		List<Board> boards = node.getLegalMoves().map(node::makeMove).collect(Collectors.toList());
-		Collections.shuffle(boards);
+		//Collections.shuffle(boards);
 		return boards;
 	}
 
 	private double heuristic(Board b) {
-		double a1 = 0;
-		double a2 = b.numStonesOnBoard(us) - b.numStonesOnBoard(us.other());
-		return a1 / 100 + a2 / 200;
+		//double a1 = 0;
+		//double a2 = b.numStonesOnBoard(us) - b.numStonesOnBoard(us.other());
+		//return a1 / 100 + a2 / 200;
+		
+		// flat count
+		double flatCountAdvantage = b.numStonesOnBoard(us) - b.numStonesOnBoard(us.other());
+		// num stones we've played vs them
+		double a2 = (21 - b.getNumStones(us)) - (21 - b.getNumStones(us.other()));
+		return (flatCountAdvantage / 200) + (a2 / 200);
 	}
 }
