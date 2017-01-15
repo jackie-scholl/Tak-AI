@@ -264,7 +264,12 @@ public class Board {
 		return deepCopy(boardArray);
 	}
 	
+	public boolean inBounds(Position p) {
+		return inBounds(p.x) && inBounds(p.y);
+	}
+	
 	public Stack getStack(int x, int y) {
+		
 		return boardArray[x][y];
 	}
 	

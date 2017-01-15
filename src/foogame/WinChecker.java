@@ -98,7 +98,7 @@ public class WinChecker {
 	}
 
 	private static boolean winCheckHorizontal(Board board, Color c, Set<Position> visitedSet, Position curPos) {
-		if (visitedSet.contains(curPos) || !inBounds(board, curPos) ||
+		if (visitedSet.contains(curPos) || !board.inBounds(curPos) ||
 				!Optional.of(board.getBoardArray()[curPos.x][curPos.y]).filter(x -> !x.isEmpty()).map(Stack::top)
 				.filter(x -> x.color == c && x.type != PieceType.WALL).isPresent()) {
 			//System.out.printf("false for %s at (%d, %d)%n", c, curPos.x, curPos.y);
@@ -115,7 +115,7 @@ public class WinChecker {
 	}
 	
 	private static boolean winCheckVertical(Board board, Color c, Set<Position> visitedSet, Position curPos) {
-		if (visitedSet.contains(curPos) || !inBounds(board, curPos) ||
+		if (visitedSet.contains(curPos) || !board.inBounds(curPos) ||
 				!Optional.of(board.getBoardArray()[curPos.x][curPos.y]).filter(x -> !x.isEmpty()).map(Stack::top)
 				.filter(x -> x.color == c && x.type != PieceType.WALL).isPresent()) {
 			//System.out.printf("false for %s at (%d, %d)%n", c, curPos.x, curPos.y);
@@ -130,9 +130,4 @@ public class WinChecker {
 				.map(d -> curPos.move(d))
 				.anyMatch(p -> winCheckVertical(board, c, newVisitedSet, p));
 	}
-
-	private static boolean inBounds(Board b, Position p) {
-		return b.inBounds(p.x) && b.inBounds(p.y);
-	}
-
 }

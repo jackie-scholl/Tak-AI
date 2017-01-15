@@ -123,21 +123,34 @@ public class Minimaxer implements Player {
 
 		double c1 = Position.positionStream(b.size)
 				.filter(p -> isColor(b, p, us))
-				.flatMap(p -> Arrays.stream(Direction.values))
+				.mapToLong(p -> Arrays.stream(Direction.values())
 						.map(d -> p.move(d))
 						.filter(p2 -> isColor(b, p2, us))
 						.count())
 				.sum();
+		
+		double c2 = Position.positionStream(b.size)
+				.filter(p -> isColor(b, p, us.other()))
+				.mapToLong(p -> Arrays.stream(Direction.values())
+						.map(d -> p.move(d))
+						.filter(p2 -> isColor(b, p2, us.other()))
+						.count())
+				.sum();
+		
+		double c = c1 - c2;
 
 		// flat count
 		double a1 = b.numStonesOnBoard(us) - b.numStonesOnBoard(us.other());
 		// num stones we've played vs them
 		//double a2 = (21 - b.getNumStones(us)) - (21 - b.getNumStones(us.other()));
 		double a2 = b.getNumStones(us.other()) - b.getNumStones(us);
-		return (a1 / 200) + (a2 / 200);
+		return (a1 / 200) + (a2 / 200) + (c/400);
 	}
 
 	private static boolean isColor(Board b, Position p, Color c) {
+		if (!b.inBounds(p)) {
+			return false;
+		}
 		Stack s = b.getStack(p);
 		return !s.isEmpty() && s.top().color == c;
 	}
