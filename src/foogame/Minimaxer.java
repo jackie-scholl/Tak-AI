@@ -20,26 +20,26 @@ public class Minimaxer implements Player {
 
 	public Move getMove(Board board) {
 		long start = System.currentTimeMillis();
-		
+
 		this.us = board.whoseTurn;
 		/*MoveScorePair moveScorePair = board.getLegalMoves().parallel()
 				.map(m -> createMoveScorePair(board, m))
 				.max((x, y) -> Double.compare(x.score, y.score)).get();*/
-		
+
 		List<MoveScorePair> moveScorePairs = board.getLegalMoves().parallel()
 				.map(m -> createMoveScorePair(board, m))
 				.collect(Collectors.toList());
 				//.max((x, y) -> Double.compare(x.score, y.score)).get();
 		Collections.shuffle(moveScorePairs);
-		
+
 		MoveScorePair moveScorePair = moveScorePairs
 				.stream()
 				.max((x, y) -> Double.compare(x.score, y.score))
 				.get();
-		
+
 		Move move = moveScorePair.move;
 		double score = moveScorePair.score;
-		
+
 		if (!GameInstance.SILENT) {
 			//System.out.println(score);
 			if (score < -0.5) {
@@ -52,10 +52,10 @@ public class Minimaxer implements Player {
 			double difference = (end-start)/1000.0;
 			System.out.printf("Time taken: %.1f seconds; score: %.3f%n", difference, score);
 		}
-			
+
 		return move;
 	}
-	
+
 	private MoveScorePair createMoveScorePair(Board board, Move m) {
 		return new MoveScorePair(
 				alphabeta(board.makeMove(m), depth, Double.NEGATIVE_INFINITY, Double.POSITIVE_INFINITY), m);
@@ -109,16 +109,18 @@ public class Minimaxer implements Player {
 			return v*0.98;
 		}
 	}
-	
+
 	private static List<Board> getBoards(Board node) {
 		List<Board> boards = node.getLegalMoves().map(node::makeMove).collect(Collectors.toList());
-		Collections.shuffle(boards);
+		//Collections.shuffle(boards);
 		return boards;
 	}
 
 	private double heuristic(Board b) {
-		double a1 = 0;
+		/*double a1 = 0;
 		double a2 = b.numStonesOnBoard(us) - b.numStonesOnBoard(us.other());
+		return a1 / 100 + a2 / 200;*/
+
 		double c1 = Position.positionStream(b.size)
 				.filter(p -> isColor(b, p, us))
 				.flatMap(p -> Arrays.stream(Direction.values))
@@ -126,9 +128,15 @@ public class Minimaxer implements Player {
 						.filter(p2 -> isColor(b, p2, us))
 						.count())
 				.sum();
-		return a1 / 100 + a2 / 200;
+
+		// flat count
+		double a1 = b.numStonesOnBoard(us) - b.numStonesOnBoard(us.other());
+		// num stones we've played vs them
+		//double a2 = (21 - b.getNumStones(us)) - (21 - b.getNumStones(us.other()));
+		double a2 = b.getNumStones(us.other()) - b.getNumStones(us);
+		return (a1 / 200) + (a2 / 200);
 	}
-	
+
 	private static boolean isColor(Board b, Position p, Color c) {
 		Stack s = b.getStack(p);
 		return !s.isEmpty() && s.top().color == c;
