@@ -88,6 +88,7 @@ public class WinChecker {
 				return true;
 			}
 		}
+
 		for (int i=0; i<board.size; i++) {
 			if (winCheckVertical(board, c, new HashSet<>(), new Position(0, i))) {
 				return true;
