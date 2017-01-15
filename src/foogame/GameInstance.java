@@ -33,6 +33,22 @@ public class GameInstance {
 		this.board = new Board(5);
 	}
 	
+	public GameInstance(Player player1, Player player2, Board b) {
+		this(getEnumMap(player1, player2), b);
+	}
+	
+	public GameInstance(EnumMap<Color, Player> players, Board b) {
+		this(players, new HashSet<>(), b);
+	}
+	
+	public GameInstance(EnumMap<Color, Player> players, Set<GameObserver> observers, Board b) {
+		this.players = new EnumMap<Color, Player>(players);
+		this.observers = new HashSet<>(observers);
+		this.observers.addAll(players.values());
+		this.board = b;
+	}
+	
+
 	public Optional<Color> runSingle() {
 		Move m = players.get(board.whoseTurn).getMove(board);
 		Board next = board.makeMove(m);
@@ -71,6 +87,11 @@ public class GameInstance {
 		Player player2 = parsePlayer(args[1]);
 		GameInstance game = new GameInstance(player1, player2);
 		game.registerObserver(new GameLogger("game.out.txt"));
+		if (args.length > 2) {
+			TPSInput tpsIn = new TPSInput(args[3]);
+			Board b = tpsIn.populateBoard();
+			game = new GameInstance(player1, player2, b);
+		}
 		if (!SILENT) {
 			game.registerObserver(new GameLogger(new PrintWriter(System.out)));
 		}
