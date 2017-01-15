@@ -107,22 +107,12 @@ public class GameInstance {
 		} else if (s.startsWith("M")) {
 			int heuristicNum = Integer.parseInt(s.substring(1, 2));
 			int depth = Integer.parseInt(s.substring(2, 3));
-			BiFunction<Board, Color, Double> heuristic = HEURISTIC_MAP.get(heuristicNum);
+			BiFunction<Board, Color, Double> heuristic = Heuristics.HEURISTIC_MAP.get(heuristicNum);
 			System.out.printf("Using minimaxer with heuristic #%d (%s) and depth %d%n", heuristicNum, heuristic, depth);
 			return new Minimaxer(depth, heuristic);
 		} else {
 			throw new RuntimeException("bad argument");
 			//return new Artificial.Artifical1();
 		}
-	}
-	
-	private static final Map<Integer, BiFunction<Board, Color, Double>> HEURISTIC_MAP = new HashMap<>();
-	
-	static {
-		HEURISTIC_MAP.put(0, Minimaxer::heuristic0);
-		HEURISTIC_MAP.put(1, Minimaxer::heuristic1);
-		HEURISTIC_MAP.put(2, Minimaxer::heuristic2);
-		//System.out.println("setting heuristic map");
-		//System.out.println(HEURISTIC_MAP);
 	}
 }

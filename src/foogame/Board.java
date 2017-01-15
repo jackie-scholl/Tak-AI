@@ -66,196 +66,20 @@ public class Board {
 		}
 		return boardArray;
 	}
-
+	
 	public boolean isLegalMove(Move m) {
-		if (m.color != this.whoseTurn) {
-			return false;
-		}
-		if (m instanceof PlaceStone) {
-			return isLegalPlaceStone((PlaceStone) m);
-		} else if (m instanceof MoveStack) {
-			return isLegalMoveStack((MoveStack) m);
-		} else {
-			throw new RuntimeException();
-		}
-	}
-
-	private boolean isLegalPlaceStone(PlaceStone m) {
-		return inBounds(m) &&
-				(m.type.equals(PieceType.CAPSTONE) ? numCapstones.get(m.color) > 0 : numStones.get(m.color) > 0)
-				&& boardArray[m.x][m.y].isEmpty();
-	}
-
-	private boolean isLegalMoveStack(MoveStack m) {
-		if (m.count > size || m.count < 1) {
-			//System.out.println("bad count");
-			return false;
-		}
-		if (!inBounds(m)) {
-			//System.out.println("out of bounds");
-			return false;
-		}
-
-		Stack s = boardArray[m.x][m.y];
-		if (s.isEmpty()) {
-			//System.out.println("nothing to move from");
-			return false;
-		}
-		
-		if (s.top().color != whoseTurn) {
-			//System.out.println("You can't move someone else's stone");
-			return false;
-		}
-
-		int row = m.x + m.dir.dx * m.dropCounts.length;
-		int col = m.y + m.dir.dy * m.dropCounts.length;
-
-		for (int i = m.dropCounts.length - 1; i >= 0; i--) {
-			int grabThisTime = m.dropCounts[i];
-			Stack[] stacks = s.split(grabThisTime);
-			Stack miniStack = stacks[1]; // aka grabStack
-			s = stacks[0];
-			if (!isLegalMiniStack(row, col, miniStack)) {
-				//System.out.println("illegal ministack");
-				return false;
-			}
-			row -= m.dir.dx;
-			col -= m.dir.dy;
-		}
-
-		return true;
-	}
-
-	private boolean isLegalMiniStack(int row, int col, Stack miniStack) {
-		if (!inBounds(row) || !inBounds(col)) {
-			//System.out.println("out of bounds  2");
-			return false;
-		}
-
-		if (boardArray[row][col].isEmpty()) {
-			return true;
-		}
-
-		PieceType t = boardArray[row][col].top().type;
-
-		if (t == PieceType.CAPSTONE) {
-			//System.out.println("can't move onto capstone");
-			return false;
-		}
-
-		if (t == PieceType.FLAT) {
-			return true;
-		}
-
-		if (t == PieceType.WALL) {
-			if (miniStack.getCopy()[0].type == PieceType.CAPSTONE) {
-				//System.out.println("can't move onto wall unless ur a capstone");
-				return true;
-			}
-			return false;
-		}
-
-		throw new RuntimeException("Impossible!");
-	}
-
-	private boolean inBounds(PlaceStone m) {
-		return inBounds(m.x) && inBounds(m.y);
-	}
-
-	private boolean inBounds(MoveStack m) {
-		return inBounds(m.x)
-				&& inBounds(m.y)
-				&& inBounds(m.x + m.dir.dx * m.dropCounts.length)
-				&& inBounds(m.y + m.dir.dy * m.dropCounts.length);
+		return BoardMoveImpl.isLegalMove(this, m);
 	}
 
 	public boolean inBounds(int x) {
 		return x >= 0 && x < size;
 	}
-
+	
 	public Board makeMove(Move m) {
-		if (!isLegalMove(m)) {
-			throw new RuntimeException("bad move");
-		}
-		if (m instanceof PlaceStone) {
-			return doPlaceStone((PlaceStone) m);
-		} else if (m instanceof MoveStack) {
-			return doMoveStack((MoveStack) m);
-		} else {
-			throw new RuntimeException();
-		}
-	}
-
-	private Board doPlaceStone(PlaceStone m) {
-		Stack[][] array = deepCopy(boardArray);
-		array[m.x][m.y] = new Stack(new Stone(m.type, m.color));
-		EnumMap<Color, Integer> newNumStones = this.numStones;
-		EnumMap<Color, Integer> newNumCapstones = this.numCapstones;
-		if (m.type.equals(PieceType.CAPSTONE)) {
-			newNumCapstones = new EnumMap<Color, Integer>(this.numCapstones);
-			newNumCapstones.compute(m.color, (k, v) -> v - 1);
-		} else {
-			newNumStones = new EnumMap<Color, Integer>(this.numStones);
-			newNumStones.compute(m.color, (k, v) -> v - 1);
-		}
-		return new Board(array, newNumStones, newNumCapstones, m.color.other(), this.turnNumber + 1);
-	}
-
-	/*private Board doCapture(MoveStack m) {
-		Optional<Stack>[][] array = deepCopy(boardArray);
-		//PieceType oldType = array[m.x][m.y].get().top().type;
-		Stack movingStack = array[m.x][m.y].get();
-		array[m.x][m.y] = Optional.empty();
-		Optional<Stack> bottomStack = array[m.x+m.dir.dx][m.y+m.dir.dy];
-		if (bottomStack.isPresent()) {
-			array[m.x + m.dir.dx][m.y + m.dir.dy] = Optional.of(bottomStack.get().addOnTop(movingStack));
-		} else {
-			array[m.x + m.dir.dx][m.y + m.dir.dy] = Optional.of(movingStack);
-		}
-		return new Board(array, this.numStones, m.color.other());
-	}*/
-
-	private Board doMoveStack(MoveStack m) {
-		Stack[][] array = deepCopy(boardArray);
-		Stack s = array[m.x][m.y];
-
-		int row = m.x + m.dir.dx * m.length;
-		int col = m.y + m.dir.dy * m.length;
-
-		for (int i = m.length - 1; i >= 0; i--) {
-			int grabThisTime = m.dropCounts[i];
-			//System.out.printf("(%d, %d, %d)%n", row, col, grabThisTime);
-			Stack[] stacks = s.split(grabThisTime);
-			//System.out.printf("Stacks: %s%n", Arrays.deepToString(stacks));
-			Stack miniStack = stacks[1]; // aka grabStack
-			s = stacks[0];
-			Stack remain = applyMiniStack(row, col, miniStack);
-			//System.out.println(remain);
-			array[row][col] = remain;
-
-			row -= m.dir.dx;
-			col -= m.dir.dy;
-		}
-
-		array[m.x][m.y] = s;
-
-		return new Board(array, this.numStones, this.numCapstones, m.color.other(), this.turnNumber + 1);
-	}
-
-	private Stack applyMiniStack(int row, int col, Stack miniStack) {
-		Stack current = boardArray[row][col];
-		if (current.isEmpty()) {
-			return miniStack;
-		}
-		if (current.top().type == PieceType.WALL) {
-			// flatten the top
-			current = current.split(1)[0].addOnTop(new Stack(new Stone(PieceType.FLAT, current.top().color)));
-		}
-		return current.addOnTop(miniStack);
+		return BoardMoveImpl.makeMove(this, m);
 	}
 
 	public Optional<Color> hasAnyoneWon() {
-		// Optional<Color> result = WinChecker.winCheck(this);
 		Optional<Color> result = WinChecker.winCheck2(this);
 		return result;
 	}
@@ -283,6 +107,14 @@ public class Board {
 
 	public int getNumStones(Color c) {
 		return numStones.get(c);
+	}
+	
+	public EnumMap<Color, Integer> getNumCapstones() {
+		return new EnumMap<Color, Integer>(numCapstones);
+	}
+
+	public int getNumCapstones(Color c) {
+		return numCapstones.get(c);
 	}
 
 	public Board rotateBoard() {
@@ -327,9 +159,6 @@ public class Board {
 						Position.positionStream(size).map(x -> new PlaceStone(whoseTurn, x.x, x.y, PieceType.WALL))),
 						Position.positionStream(size).map(x -> new PlaceStone(whoseTurn, x.x, x.y, PieceType.CAPSTONE))),
 						getLegalMoveStacks())
-				/*Position.positionStream(size).flatMap(
-						x -> Arrays.stream(Direction.values()).map(d -> new MoveStack(whoseTurn, x.x, x.y, d, 1))))*/
-				// TODO: *actually* iterate through all possible stack moves
 				.filter(this::isLegalMove);
 	}
 
@@ -352,14 +181,12 @@ public class Board {
 		List<List<Integer>> possibleDropCounts = new ArrayList<>();
 		for (int i = 0; i <= maxToMove; i++) {
 			int numberToMove = i;
-			//int numberRemaining = maxToMove - numberToMove;
 			List<List<Integer>> sub = getLegalMoveStacks(x, y, d, numberToMove, maxDistance);
 			for (List<Integer> arr : sub) {
 				possibleDropCounts.add(Collections.unmodifiableList(arr));
 			}
 		}
 		
-		//List<List<Integer>> possibleDropCounts = getLegalMoveStacks(x, y, d, maxToMove, maxDistance);
 		return possibleDropCounts.stream()
 				.map(Board::integerListToIntArray)
 				.map(counts -> new MoveStack(whoseTurn, x, y, d, counts));
