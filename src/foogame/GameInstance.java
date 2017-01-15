@@ -89,10 +89,6 @@ public class GameInstance {
 			BiFunction<Board, Color, Double> heuristic = HEURISTIC_MAP.get(heuristicNum);
 			System.out.printf("Using minimaxer with heuristic #%d (%s) and depth %d%n", heuristicNum, heuristic, depth);
 			return new Minimaxer(depth, heuristic);
-		} else if (s.startsWith("N")) {
-			int depth = Integer.parseInt(s.substring(1));
-			System.out.printf("Using alternate minimaxer with depth %d%n", depth);
-			return new Minimaxer2(depth);
 		} else {
 			throw new RuntimeException("bad argument");
 			//return new Artificial.Artifical1();
