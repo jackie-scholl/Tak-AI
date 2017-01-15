@@ -3,6 +3,7 @@ package foogame;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.*;
+import java.util.function.BiFunction;
 
 public class GameInstance {
 	private final EnumMap<Color, Player> players;
@@ -83,9 +84,11 @@ public class GameInstance {
 		if (s.equals("T")) {
 			return new TUIPlayer();
 		} else if (s.startsWith("M")) {
-			int depth = Integer.parseInt(s.substring(1));
-			System.out.printf("Using minimaxer with depth %d%n", depth);
-			return new Minimaxer(depth);
+			int heuristicNum = Integer.parseInt(s.substring(1, 2));
+			int depth = Integer.parseInt(s.substring(2, 3));
+			BiFunction<Board, Color, Double> heuristic = HEURISTIC_MAP.get(heuristicNum);
+			System.out.printf("Using minimaxer with heuristic #%d (%s) and depth %d%n", heuristicNum, heuristic, depth);
+			return new Minimaxer(depth, heuristic);
 		} else if (s.startsWith("N")) {
 			int depth = Integer.parseInt(s.substring(1));
 			System.out.printf("Using alternate minimaxer with depth %d%n", depth);
@@ -94,5 +97,15 @@ public class GameInstance {
 			throw new RuntimeException("bad argument");
 			//return new Artificial.Artifical1();
 		}
+	}
+	
+	private static final Map<Integer, BiFunction<Board, Color, Double>> HEURISTIC_MAP = new HashMap<>();
+	
+	static {
+		HEURISTIC_MAP.put(0, Minimaxer::heuristic0);
+		HEURISTIC_MAP.put(1, Minimaxer::heuristic1);
+		HEURISTIC_MAP.put(2, Minimaxer::heuristic2);
+		//System.out.println("setting heuristic map");
+		//System.out.println(HEURISTIC_MAP);
 	}
 }

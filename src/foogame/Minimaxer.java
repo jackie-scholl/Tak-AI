@@ -2,18 +2,21 @@ package foogame;
 
 import java.util.*;
 import java.util.stream.Collectors;
+import java.util.function.*;
 
 /** Alpha-beta minimaxer, using the heuristic to order possible moves to achieve good pruning. */
 public class Minimaxer implements Player {
 	private final int depth;
 	private Color us;
+	private final BiFunction<Board, Color, Double> heuristic;
 
-	public Minimaxer(int depth) {
+	public Minimaxer(int depth, BiFunction<Board, Color, Double> heuristic) {
 		this.depth = depth;
+		this.heuristic = heuristic;
 	}
 
 	public Minimaxer() {
-		this(6);
+		this(6, Minimaxer::heuristic2);
 	}
 
 	public void acceptUpdate(GameUpdate update) {}
@@ -76,7 +79,7 @@ public class Minimaxer implements Player {
 		if (win.isPresent()) {
 			return win.get() == us ? 1 : -1;
 		} else if (depth == 0) {
-			return heuristic(node);
+			return this.heuristic.apply(node, us);
 		}
 		//List<Board> boards = node.getLegalMoves().map(node::makeMove).collect(Collectors.toList());
 		List<Board> boards = getBoards(node);
@@ -115,12 +118,22 @@ public class Minimaxer implements Player {
 		//Collections.shuffle(boards);
 		return boards;
 	}
+	
+	public static double heuristic0(Board b, Color us) {
+		// flat count
+		double a1 = b.numStonesOnBoard(us) - b.numStonesOnBoard(us.other());
+		return a1 / 200;
+	}
+	
+	public static double heuristic1(Board b, Color us) {
+		// flat count
+		double a1 = b.numStonesOnBoard(us) - b.numStonesOnBoard(us.other());
+		// num stones we've played vs them
+		double a2 = b.getNumStones(us.other()) - b.getNumStones(us);
+		return (a1 / 200) + (a2 / 200);
+	}
 
-	private double heuristic(Board b) {
-		/*double a1 = 0;
-		double a2 = b.numStonesOnBoard(us) - b.numStonesOnBoard(us.other());
-		return a1 / 100 + a2 / 200;*/
-
+	public static double heuristic2(Board b, Color us) {
 		double c1 = Position.positionStream(b.size)
 				.filter(p -> isColor(b, p, us))
 				.mapToLong(p -> Arrays.stream(Direction.values())
@@ -142,7 +155,6 @@ public class Minimaxer implements Player {
 		// flat count
 		double a1 = b.numStonesOnBoard(us) - b.numStonesOnBoard(us.other());
 		// num stones we've played vs them
-		//double a2 = (21 - b.getNumStones(us)) - (21 - b.getNumStones(us.other()));
 		double a2 = b.getNumStones(us.other()) - b.getNumStones(us);
 		return (a1 / 200) + (a2 / 200) + (c/400);
 	}
