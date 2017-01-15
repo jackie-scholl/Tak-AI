@@ -88,7 +88,7 @@ public class GameInstance {
 		GameInstance game = new GameInstance(player1, player2);
 		game.registerObserver(new GameLogger("game.out.txt"));
 		if (args.length > 2) {
-			TPSInput tpsIn = new TPSInput(args[3]);
+			TPSInput tpsIn = new TPSInput(args[2]);
 			Board b = tpsIn.populateBoard();
 			game = new GameInstance(player1, player2, b);
 		}
