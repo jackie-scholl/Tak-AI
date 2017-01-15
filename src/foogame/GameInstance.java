@@ -8,7 +8,7 @@ public class GameInstance {
 	private final EnumMap<Color, Player> players;
 	private final Set<GameObserver> observers;
 	private Board board;
-	public final static boolean SILENT = true;
+	public final static boolean SILENT = false;
 	
 	public GameInstance(Player redPlayer, Player bluePlayer) {
 		this(getEnumMap(redPlayer, bluePlayer));

@@ -41,7 +41,7 @@ public class Minimaxer implements Player {
 		double score = moveScorePair.score;
 		
 		if (!GameInstance.SILENT) {
-			System.out.print(score);
+			//System.out.println(score);
 			if (score < -0.5) {
 				System.out.println("Oh no! They have tinue!");
 				//PTNLogger.ptnComment("Oh no! They have tinue!");
