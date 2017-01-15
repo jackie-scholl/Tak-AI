@@ -86,14 +86,13 @@ public class GameInstance {
 			int depth = Integer.parseInt(s.substring(1));
 			System.out.printf("Using minimaxer with depth %d%n", depth);
 			return new Minimaxer(depth);
-
 		} else if (s.startsWith("N")) {
 			int depth = Integer.parseInt(s.substring(1));
 			System.out.printf("Using alternate minimaxer with depth %d%n", depth);
 			return new Minimaxer2(depth);
-		}
-		{
-			return new Artificial.Artifical1();
+		} else {
+			throw new RuntimeException("bad argument");
+			//return new Artificial.Artifical1();
 		}
 	}
 }
