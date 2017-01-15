@@ -263,6 +263,14 @@ public class Board {
 	public Stack[][] getBoardArray() {
 		return deepCopy(boardArray);
 	}
+	
+	public Stack getStack(int x, int y) {
+		return boardArray[x][y];
+	}
+	
+	public Stack getStack(Position p) {
+		return getStack(p.x, p.y);
+	}
 
 	public EnumMap<Color, Integer> getNumStones() {
 		return new EnumMap<Color, Integer>(numStones);

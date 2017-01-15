@@ -119,6 +119,18 @@ public class Minimaxer implements Player {
 	private double heuristic(Board b) {
 		double a1 = 0;
 		double a2 = b.numStonesOnBoard(us) - b.numStonesOnBoard(us.other());
+		double c1 = Position.positionStream(b.size)
+				.filter(p -> isColor(b, p, us))
+				.flatMap(p -> Arrays.stream(Direction.values))
+						.map(d -> p.move(d))
+						.filter(p2 -> isColor(b, p2, us))
+						.count())
+				.sum();
 		return a1 / 100 + a2 / 200;
+	}
+	
+	private static boolean isColor(Board b, Position p, Color c) {
+		Stack s = b.getStack(p);
+		return !s.isEmpty() && s.top().color == c;
 	}
 }
