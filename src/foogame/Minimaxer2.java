@@ -3,7 +3,10 @@ package foogame;
 import java.util.*;
 import java.util.stream.Collectors;
 
-/** Alpha-beta Minimaxer2, using the heuristic to order possible moves to achieve good pruning. */
+/**
+ * Alpha-beta Minimaxer2, using the heuristic to order possible moves to achieve
+ * good pruning.
+ */
 public class Minimaxer2 implements Player {
 	private final int depth;
 	private Color us;
@@ -16,40 +19,39 @@ public class Minimaxer2 implements Player {
 		this(6);
 	}
 
-	public void acceptUpdate(GameUpdate update) {}
+	public void acceptUpdate(GameUpdate update) {
+	}
 
 	public Move getMove(Board board) {
 		long start = System.currentTimeMillis();
 
 		this.us = board.whoseTurn;
-		/*MoveScorePair moveScorePair = board.getLegalMoves().parallel()
-				.map(m -> createMoveScorePair(board, m))
-				.max((x, y) -> Double.compare(x.score, y.score)).get();*/
+		/*
+		 * MoveScorePair moveScorePair = board.getLegalMoves().parallel() .map(m
+		 * -> createMoveScorePair(board, m)) .max((x, y) ->
+		 * Double.compare(x.score, y.score)).get();
+		 */
 
-		List<MoveScorePair> moveScorePairs = board.getLegalMoves().parallel()
-				.map(m -> createMoveScorePair(board, m))
+		List<MoveScorePair> moveScorePairs = board.getLegalMoves().parallel().map(m -> createMoveScorePair(board, m))
 				.collect(Collectors.toList());
-				//.max((x, y) -> Double.compare(x.score, y.score)).get();
+		// .max((x, y) -> Double.compare(x.score, y.score)).get();
 		Collections.shuffle(moveScorePairs);
 
-		MoveScorePair moveScorePair = moveScorePairs
-				.stream()
-				.max((x, y) -> Double.compare(x.score, y.score))
-				.get();
+		MoveScorePair moveScorePair = moveScorePairs.stream().max((x, y) -> Double.compare(x.score, y.score)).get();
 
 		Move move = moveScorePair.move;
 		double score = moveScorePair.score;
 
 		if (!GameInstance.SILENT) {
-			//System.out.println(score);
+			// System.out.println(score);
 			if (score < -0.5) {
 				System.out.println("Oh no! They have tinue!");
-				//PTNLogger.ptnComment("Oh no! They have tinue!");
+				// PTNLogger.ptnComment("Oh no! They have tinue!");
 			} else if (score > 0.5) {
 				System.out.println("Yay! We have tinue!");
 			}
 			long end = System.currentTimeMillis();
-			double difference = (end-start)/1000.0;
+			double difference = (end - start) / 1000.0;
 			System.out.printf("Time taken: %.1f seconds; score: %.3f%n", difference, score);
 		}
 
@@ -78,14 +80,16 @@ public class Minimaxer2 implements Player {
 		} else if (depth == 0) {
 			return heuristic(node);
 		}
-		//List<Board> boards = node.getLegalMoves().map(node::makeMove).collect(Collectors.toList());
+		// List<Board> boards =
+		// node.getLegalMoves().map(node::makeMove).collect(Collectors.toList());
 		List<Board> boards = getBoards(node);
-		//long seed = System.nanoTime();
-		//Collections.shuffle(boards, new Random(seed));
-		//Collections.shuffle(boards);
+		// long seed = System.nanoTime();
+		// Collections.shuffle(boards, new Random(seed));
+		// Collections.shuffle(boards);
 		if (node.whoseTurn == us) {
 			double v = Double.NEGATIVE_INFINITY;
-			//Collections.sort(boards, (x, y) -> Double.compare(heuristic(y), heuristic(x)));
+			// Collections.sort(boards, (x, y) -> Double.compare(heuristic(y),
+			// heuristic(x)));
 			for (Board child : boards) {
 				double temp = alphabeta(child, depth - 1, alpha, beta);
 				v = Math.max(v, temp);
@@ -94,10 +98,11 @@ public class Minimaxer2 implements Player {
 					break;
 				}
 			}
-			return v*0.98;
+			return v * 0.98;
 		} else {
 			double v = Double.POSITIVE_INFINITY;
-			//Collections.sort(boards, (x, y) -> Double.compare(heuristic(x), heuristic(y)));
+			// Collections.sort(boards, (x, y) -> Double.compare(heuristic(x),
+			// heuristic(y)));
 			for (Board child : boards) {
 				double temp = alphabeta(child, depth - 1, alpha, beta);
 				v = Math.min(v, temp);
@@ -106,45 +111,42 @@ public class Minimaxer2 implements Player {
 					break;
 				}
 			}
-			return v*0.98;
+			return v * 0.98;
 		}
 	}
 
 	private static List<Board> getBoards(Board node) {
 		List<Board> boards = node.getLegalMoves().map(node::makeMove).collect(Collectors.toList());
-		//Collections.shuffle(boards);
+		// Collections.shuffle(boards);
 		return boards;
 	}
 
 	private double heuristic(Board b) {
-		/*double a1 = 0;
-		double a2 = b.numStonesOnBoard(us) - b.numStonesOnBoard(us.other());
-		return a1 / 100 + a2 / 200;*/
-
-		double c1 = Position.positionStream(b.size)
-				.filter(p -> isColor(b, p, us))
-				.mapToLong(p -> Arrays.stream(Direction.values())
-						.map(d -> p.move(d))
-						.filter(p2 -> isColor(b, p2, us))
-						.count())
-				.sum();
-		
-		double c2 = Position.positionStream(b.size)
-				.filter(p -> isColor(b, p, us.other()))
-				.mapToLong(p -> Arrays.stream(Direction.values())
-						.map(d -> p.move(d))
-						.filter(p2 -> isColor(b, p2, us.other()))
-						.count())
-				.sum();
-		
-		double c = c1 - c2;
+		/*
+		 * double a1 = 0; double a2 = b.numStonesOnBoard(us) -
+		 * b.numStonesOnBoard(us.other()); return a1 / 100 + a2 / 200;
+		 */
+		/*
+		 * double c1 = Position.positionStream(b.size) .filter(p -> isColor(b,
+		 * p, us)) .mapToLong(p -> Arrays.stream(Direction.values()) .map(d ->
+		 * p.move(d)) .filter(p2 -> isColor(b, p2, us)) .count()) .sum();
+		 * 
+		 * double c2 = Position.positionStream(b.size) .filter(p -> isColor(b,
+		 * p, us.other())) .mapToLong(p -> Arrays.stream(Direction.values())
+		 * .map(d -> p.move(d)) .filter(p2 -> isColor(b, p2, us.other()))
+		 * .count()) .sum();
+		 * 
+		 * double c = c1 - c2;
+		 */
 
 		// flat count
 		double a1 = b.numStonesOnBoard(us) - b.numStonesOnBoard(us.other());
 		// num stones we've played vs them
-		//double a2 = (21 - b.getNumStones(us)) - (21 - b.getNumStones(us.other()));
+		// double a2 = (21 - b.getNumStones(us)) - (21 -
+		// b.getNumStones(us.other()));
 		double a2 = b.getNumStones(us.other()) - b.getNumStones(us);
-		return (a1 / 200) + (a2 / 200) + (c/400);
+		// return (a1 / 200) + (a2 / 200) + (c/400);
+		return (a1 / 200) + (a2 / 200);
 	}
 
 	private static boolean isColor(Board b, Position p, Color c) {
