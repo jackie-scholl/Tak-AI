@@ -5,15 +5,28 @@ public class TPSInput {
 	private String[] grid;
 	private int turnIndicator;
 	private int turnNumber;
-	
+	private boolean print_verification = true;
 
 	public TPSInput(String tps) {
+		if (GameInstance.SILENT) {
+			print_verification = false;
+		}
 		this.tps = tps;
 	}
 
 	public Board populateBoard() {
 		if (verifyTPS(this.tps)) {
-			System.out.println("tps was verified");
+			if (print_verification) {
+				System.out.println("tps was verified:");
+				for (String i : grid) {
+					System.out.println(i);
+				}
+				System.out.println("Turn Indicator: " + turnIndicator);
+				System.out.println("Turn Number: " + turnNumber);
+			}
+			// make the board
+			
+			
 			return new Board(5);
 		}
 		System.out.println(tps + "failed");
@@ -39,8 +52,8 @@ public class TPSInput {
 		}
 		this.grid = rows;
 		str = str.replace(grid, "");
-		//System.out.println("String is now:" + str);
-		String turnIndicator = str.substring(1,2);
+		// System.out.println("String is now:" + str);
+		String turnIndicator = str.substring(1, 2);
 		if (!turnIndicator.matches("1|2")) {
 			System.out.println("Bad turn indicator: " + turnIndicator);
 		} else {
@@ -54,7 +67,5 @@ public class TPSInput {
 		}
 
 		return true;
-
 	}
-
 }
