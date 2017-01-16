@@ -14,11 +14,12 @@ public class TPSInput {
 			System.out.println("tps was verified");
 			return new Board(5);
 		}
+		System.out.println("fuck" + tps);
 		return new Board(5);
 	}
 
 	private boolean verifyTPS(String str) {
-		return str.matches("TPS");
+		return str.matches("\\[TPS \"(((((1|2|x)+)S*C*,){4}((1|2|x)+)S*C*/?){1,4}){5} (1|2) \\d\"\\]");
 	}
 
 }
