@@ -105,7 +105,7 @@ public class GameInstance {
 			return new TUIPlayer();
 		} else if (s.startsWith("M")) {
 			int heuristicNum = Integer.parseInt(s.substring(1, 2));
-			int depth = Integer.parseInt(s.substring(2, 3));
+			int depth = Integer.parseInt(s.substring(2, 3)) - 1; // -1 because reasons
 			BiFunction<Board, Color, Double> heuristic = Heuristics.HEURISTIC_MAP.get(heuristicNum);
 			System.out.printf("Using minimaxer with heuristic #%d (%s) and depth %d%n", heuristicNum, heuristic, depth);
 			return new Minimaxer(depth, heuristic);
