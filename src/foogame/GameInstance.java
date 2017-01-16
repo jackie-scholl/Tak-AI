@@ -48,7 +48,6 @@ public class GameInstance {
 		this.board = b;
 	}
 	
-
 	public Optional<Color> runSingle() {
 		Move m = players.get(board.whoseTurn).getMove(board);
 		Board next = board.makeMove(m);
