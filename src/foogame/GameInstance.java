@@ -4,6 +4,8 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.*;
 import java.util.function.BiFunction;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class GameInstance {
 	private final EnumMap<Color, Player> players;
@@ -104,14 +106,27 @@ public class GameInstance {
 		if (s.equals("T")) {
 			return new TUIPlayer();
 		} else if (s.startsWith("M")) {
-			int heuristicNum = Integer.parseInt(s.substring(1, 2));
-			int depth = Integer.parseInt(s.substring(2, 3)) - 1; // -1 because reasons
-			BiFunction<Board, Color, Double> heuristic = Heuristics.HEURISTIC_MAP.get(heuristicNum);
-			System.out.printf("Using minimaxer with heuristic #%d (%s) and depth %d%n", heuristicNum, heuristic, depth);
-			return new Minimaxer(depth, heuristic);
+			return parseMinimaxPlayer(s);
 		} else {
 			throw new RuntimeException("bad argument");
 			//return new Artificial.Artifical1();
 		}
+	}
+	
+	private static Player parseMinimaxPlayer(String s) {
+		Matcher m = Pattern.compile("M(\\d)(H(\\d)?)").matcher(s);
+		if (!m.matches()) {
+			throw new RuntimeException("Cannot parse minimax player: "+s);
+		}
+		int depth = Integer.parseInt(m.group(1));
+		int heuristicNum;
+		if (m.groupCount() > 1) {
+			heuristicNum = Integer.parseInt(m.group(3));
+		} else {
+			heuristicNum = 2;
+		}
+		BiFunction<Board, Color, Double> heuristic = Heuristics.HEURISTIC_MAP.get(heuristicNum);
+		System.out.printf("Using minimaxer with heuristic #%d and depth %d%n", heuristicNum, depth);
+		return new Minimaxer(depth, heuristic);
 	}
 }

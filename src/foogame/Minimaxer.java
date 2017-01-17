@@ -11,7 +11,7 @@ public class Minimaxer implements Player {
 	private final BiFunction<Board, Color, Double> heuristic;
 
 	public Minimaxer(int depth, BiFunction<Board, Color, Double> heuristic) {
-		this.depth = depth;
+		this.depth = depth - 1; // -1 because reasons
 		this.heuristic = heuristic;
 	}
 
