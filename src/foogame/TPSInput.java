@@ -116,8 +116,10 @@ public class TPSInput {
 			this.turnIndicator = Integer.parseInt(turnIndicator);
 		}
 		String turnNum = str.substring(3).replace("]", "");
-
-		this.turnNumber = Integer.parseInt(turnNum);
+		this.turnNumber = Integer.parseInt(turnNum) * 2;
+		if (this.turnIndicator == 2) {
+			this.turnNumber += 1;
+		}
 
 		return true;
 	}
