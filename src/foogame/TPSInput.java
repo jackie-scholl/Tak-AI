@@ -39,7 +39,7 @@ public class TPSInput {
 			Stack[][] out = new Stack[5][5];
 			int row = 0;
 			for (String i : grid) {
-				String[] eachSpace = i.split(i);
+				String[] eachSpace = i.split(",");
 				int col = 0;
 				for (String space : eachSpace) {
 					out[row][col] = buildSpace(space);
@@ -54,8 +54,7 @@ public class TPSInput {
 			EnumMap<Color, Integer> numCapstones = new EnumMap<Color, Integer>(Color.class);
 			numCapstones.put(Color.WHITE, this.whiteCapstones);
 			numCapstones.put(Color.BLACK, this.blackCapstones);
-			//return new Board(out, numStones, numCapstones, turnColor, turnNumber);
-			return new Board(5);
+			return new Board(out, numStones, numCapstones, turnColor, turnNumber);
 		}
 		System.err.println(tps + "failed");
 		return new Board(5);
