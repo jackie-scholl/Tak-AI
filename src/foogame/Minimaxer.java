@@ -8,11 +8,11 @@ import java.util.function.*;
 public class Minimaxer implements Player {
 	private final int depth;
 	private Color us;
-	private final BiFunction<Board, Color, Double> heuristic;
+	private final BiFunction<Board, Color, Double> heuristicFunc;
 
 	public Minimaxer(int depth, BiFunction<Board, Color, Double> heuristic) {
 		this.depth = depth - 1; // -1 because reasons
-		this.heuristic = heuristic;
+		this.heuristicFunc = heuristic;
 	}
 
 	public Minimaxer() {
@@ -79,7 +79,7 @@ public class Minimaxer implements Player {
 		if (win.isPresent()) {
 			return win.get() == us ? 1 : -1;
 		} else if (depth == 0) {
-			return this.heuristic.apply(node, us);
+			return heuristic(node);
 		}
 		//List<Board> boards = node.getLegalMoves().map(node::makeMove).collect(Collectors.toList());
 		List<Board> boards = getBoards(node);
@@ -112,11 +112,13 @@ public class Minimaxer implements Player {
 			return v*0.98;
 		}
 	}
+	
+	private double heuristic(Board b) {
+		return heuristicFunc.apply(b, us) - heuristicFunc.apply(b, us.other());
+	}
 
 	private static List<Board> getBoards(Board node) {
-		List<Board> boards = node.getLegalMoves().map(node::makeMove).collect(Collectors.toList());
-		//Collections.shuffle(boards);
-		return boards;
+		return node.getLegalMoves().map(node::makeMove).collect(Collectors.toList());
 	}
 	
 	static boolean isColor(Board b, Position p, Color c) {
