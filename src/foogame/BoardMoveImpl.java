@@ -143,9 +143,7 @@ public class BoardMoveImpl {
 
 		for (int i = m.length - 1; i >= 0; i--) {
 			int grabThisTime = m.dropCounts[i];
-			//System.out.printf("(%d, %d, %d)%n", row, col, grabThisTime);
 			Stack[] stacks = s.split(grabThisTime);
-			//System.out.printf("Stacks: %s%n", Arrays.deepToString(stacks));
 			Stack miniStack = stacks[1]; // aka grabStack
 			s = stacks[0];
 			Stack remain = applyMiniStack(b, row, col, miniStack);
