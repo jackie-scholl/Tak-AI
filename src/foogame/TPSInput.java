@@ -73,16 +73,18 @@ public class TPSInput {
 				stones.add(new Stone(PieceType.FLAT, Color.BLACK));
 				this.blackPieces--;
 			} else if (c == 'C' || c == 'c') {
+				Color color = stones.get(stones.size() - 1).color;
 				stones.remove(stones.get(stones.size() - 1));
-				stones.add(new Stone(PieceType.CAPSTONE, stones.get(stones.size() - 1).color));
+				stones.add(new Stone(PieceType.CAPSTONE, color));
 				if (stones.get(stones.size() - 1).color == Color.WHITE) {
 					this.whiteCapstones--;
 				} else {
 					this.blackCapstones--;
 				}
 			} else if (c == 'S' || c == 's') {
+				Color color = stones.get(stones.size() - 1).color;
 				stones.remove(stones.get(stones.size() - 1));
-				stones.add(new Stone(PieceType.WALL, stones.get(stones.size() - 1).color));
+				stones.add(new Stone(PieceType.WALL, color));
 			}
 		}
 		Stone[] stoneArr = stones.toArray(new Stone[stones.size()]);
