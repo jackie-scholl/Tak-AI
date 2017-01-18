@@ -96,7 +96,7 @@ public class GameLogger implements GameObserver {
 			}
 
 		}
-		int whoseTurn = board.whoseTurn == Color.WHITE ? 1 : 2;
+		int whoseTurn = board.whoseTurn == Color.WHITE ? 2 : 1; //because this is called after the turn
 		tps.append(String.format(" %d %d\"]%n", whoseTurn, ((update.board.turnNumber-1)/2)+1));
 		return tps.toString();
 	}
