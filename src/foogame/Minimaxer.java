@@ -2,6 +2,7 @@ package foogame;
 
 import java.util.*;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import java.util.function.*;
 
 /** Alpha-beta minimaxer, using the heuristic to order possible moves to achieve good pruning. */
@@ -118,8 +119,19 @@ public class Minimaxer implements Player {
 	}
 
 	private static List<Board> getBoards(Board node) {
-		return node.getLegalMoves().map(node::makeMove).collect(Collectors.toList());
+		List<Board> list = new ArrayList<>();
+		List<Move> moves = node.getLegalMoves().collect(Collectors.toList());
+		for (Move m : moves) {
+			Board b = node.makeMove(m);
+			list.add(b);
+		}
+		return list;
+		///return collect(node.getLegalMoves().map(node::makeMove));
 	}
+	
+	/*private static List<Board> collect(Stream<Board> stream) {
+		//return stream.collect(Collectors.toList());
+	}*/
 	
 	static boolean isColor(Board b, Position p, Color c) {
 		if (!b.inBounds(p)) {

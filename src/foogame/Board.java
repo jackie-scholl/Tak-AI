@@ -188,11 +188,11 @@ public class Board {
 		}
 		
 		return possibleDropCounts.stream()
-				.map(Board::integerListToIntArray)
+				//.map(Board::integerListToIntArray)
 				.map(counts -> new MoveStack(whoseTurn, x, y, d, counts));
 	}
 
-	private static int[] integerListToIntArray(List<Integer> l) {
+	public static int[] integerListToIntArray(List<Integer> l) {
 		return l.stream().mapToInt(x -> x).toArray();
 	}
 

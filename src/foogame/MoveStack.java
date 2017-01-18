@@ -1,6 +1,7 @@
 package foogame;
 
 import java.util.Arrays;
+import java.util.List;
 import java.util.stream.Collectors;
 
 public class MoveStack extends Move {
@@ -19,6 +20,16 @@ public class MoveStack extends Move {
 		this.dropCounts = Arrays.copyOf(dropCounts, dropCounts.length);
 		this.length = dropCounts.length;
 		this.count = Arrays.stream(dropCounts).reduce(0, Integer::sum);
+	}
+	
+	public MoveStack(Color color, int x, int y, Direction dir, List<Integer> dropCounts) {
+		super(color);
+		this.x = x;
+		this.y = y;
+		this.dir = dir;
+		this.dropCounts = Board.integerListToIntArray(dropCounts);
+		this.length = dropCounts.size();
+		this.count = 0;//dropCounts.stream().reduce(0, Integer::sum);
 	}
 	
 	public boolean checkDropsValid() {
