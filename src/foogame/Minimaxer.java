@@ -21,9 +21,14 @@ public class Minimaxer implements Player {
 	}
 
 	public void acceptUpdate(GameUpdate update) {}
+	
+
+	public static final List<Integer> topBranchingFactors = new ArrayList<>();
 
 	public Move getMove(Board board) {
 		long start = System.currentTimeMillis();
+		
+		movesConsidered = 0;
 
 		this.us = board.whoseTurn;
 		/*MoveScorePair moveScorePair = board.getLegalMoves().parallel()
@@ -35,6 +40,8 @@ public class Minimaxer implements Player {
 				.collect(Collectors.toList());
 				//.max((x, y) -> Double.compare(x.score, y.score)).get();
 		
+		topBranchingFactors.add(moveScorePairs.size());
+		
 		Collections.shuffle(moveScorePairs);
 
 		MoveScorePair moveScorePair = moveScorePairs
@@ -42,9 +49,11 @@ public class Minimaxer implements Player {
 				.max((x, y) -> Double.compare(x.score, y.score))
 				.get();
 		
-		Collections.sort(moveScorePairs, (x, y) -> Double.compare(y.score, x.score));
-		System.out.println(moveScorePairs);
-
+		if (GameInstance.SHOUTY) {
+			Collections.sort(moveScorePairs, (x, y) -> Double.compare(y.score, x.score));
+			System.out.println(moveScorePairs);
+		}
+		
 		Move move = moveScorePair.move;
 		double score = moveScorePair.score;
 
@@ -58,7 +67,10 @@ public class Minimaxer implements Player {
 			}
 			long end = System.currentTimeMillis();
 			double difference = (end-start)/1000.0;
-			System.out.printf("Time taken: %.1f seconds; score: %.3f%n", difference, score);
+			if (GameInstance.SHOUTY) {
+				System.out.printf("Time taken: %.1f seconds; score: %.3f%n", difference, score);
+				System.out.printf("Moves considered: %d, top branching factor: %d%n", movesConsidered, moveScorePairs.size());
+			}
 		}
 
 		return move;
@@ -82,8 +94,11 @@ public class Minimaxer implements Player {
 			return String.format("%s: %.3f", move.ptn(), score);
 		}
 	}
+	
+	private static volatile long movesConsidered;
 
 	private double alphabeta(Board node, int depth, double alpha, double beta) {
+		movesConsidered++;
 		Optional<Color> win = node.hasAnyoneWon();
 		if (win.isPresent()) {
 			return win.get() == us ? 1 : -1;
@@ -140,10 +155,6 @@ public class Minimaxer implements Player {
 		return list;
 		///return collect(node.getLegalMoves().map(node::makeMove));
 	}
-	
-	/*private static List<Board> collect(Stream<Board> stream) {
-		//return stream.collect(Collectors.toList());
-	}*/
 	
 	static boolean isColor(Board b, Position p, Color c) {
 		if (!b.inBounds(p)) {

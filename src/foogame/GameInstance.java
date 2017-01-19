@@ -12,6 +12,7 @@ public class GameInstance {
 	private final Set<GameObserver> observers;
 	private Board board;
 	public final static boolean SILENT = false;
+	public final static boolean SHOUTY = false;
 	
 	public GameInstance(Player redPlayer, Player bluePlayer) {
 		this(getEnumMap(redPlayer, bluePlayer));
@@ -61,6 +62,10 @@ public class GameInstance {
 		Optional<Color> result = board.hasAnyoneWon();
 		if (result.isPresent()) {
 			System.out.printf("Game finished! %s won%n", result.get().name());
+			if (SHOUTY) {
+				System.out.printf("average branching factor: %.1f%n", Minimaxer.branchingFactors.stream().mapToInt(x->x).average().getAsDouble());
+				System.out.printf("average top branching factor: %.1f%n", Minimaxer.topBranchingFactors.stream().mapToInt(x->x).average().getAsDouble());
+			}
 		}
 		return result;
 	}
