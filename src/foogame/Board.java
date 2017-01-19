@@ -178,18 +178,21 @@ public class Board {
 		int maxToMove = boardArray[x][y].length();
 		int maxDistance = getMaxDistance(x, y, d);
 		
-		List<List<Integer>> possibleDropCounts = new ArrayList<>();
+		//List<List<Integer>> possibleDropCounts = new ArrayList<>();
+		List<Move> possibleMoves = new ArrayList<>();
 		for (int i = 0; i <= maxToMove; i++) {
 			int numberToMove = i;
 			List<List<Integer>> sub = getLegalMoveStacks(x, y, d, numberToMove, maxDistance);
 			for (List<Integer> arr : sub) {
-				possibleDropCounts.add(Collections.unmodifiableList(arr));
+				//possibleDropCounts.add(Collections.unmodifiableList(arr));
+				possibleMoves.add(new MoveStack(whoseTurn, x, y, d, arr, numberToMove));
 			}
 		}
 		
-		return possibleDropCounts.stream()
+		return possibleMoves.stream();
+		//return possibleDropCounts.stream()
 				//.map(Board::integerListToIntArray)
-				.map(counts -> new MoveStack(whoseTurn, x, y, d, counts));
+		//		.map(counts -> new MoveStack(whoseTurn, x, y, d, counts));
 	}
 
 	public static int[] integerListToIntArray(List<Integer> l) {

@@ -34,12 +34,16 @@ public class Minimaxer implements Player {
 				.map(m -> createMoveScorePair(board, m))
 				.collect(Collectors.toList());
 				//.max((x, y) -> Double.compare(x.score, y.score)).get();
+		
 		Collections.shuffle(moveScorePairs);
 
 		MoveScorePair moveScorePair = moveScorePairs
 				.stream()
 				.max((x, y) -> Double.compare(x.score, y.score))
 				.get();
+		
+		Collections.sort(moveScorePairs, (x, y) -> Double.compare(y.score, x.score));
+		System.out.println(moveScorePairs);
 
 		Move move = moveScorePair.move;
 		double score = moveScorePair.score;
@@ -62,7 +66,7 @@ public class Minimaxer implements Player {
 
 	private MoveScorePair createMoveScorePair(Board board, Move m) {
 		return new MoveScorePair(
-				alphabeta(board.makeMove(m), depth, Double.NEGATIVE_INFINITY, Double.POSITIVE_INFINITY), m);
+				alphabeta(BoardMoveImpl.makeMove(board, m), depth, Double.NEGATIVE_INFINITY, Double.POSITIVE_INFINITY), m);
 	}
 
 	private static class MoveScorePair {
@@ -72,6 +76,10 @@ public class Minimaxer implements Player {
 		public MoveScorePair(double score, Move move) {
 			this.score = score;
 			this.move = move;
+		}
+		
+		public String toString() {
+			return String.format("%s: %.3f", move.ptn(), score);
 		}
 	}
 
@@ -117,12 +125,16 @@ public class Minimaxer implements Player {
 	private double heuristic(Board b) {
 		return heuristicFunc.apply(b, us) - heuristicFunc.apply(b, us.other());
 	}
+	
+	public static final List<Integer> branchingFactors = new ArrayList<>();
 
 	private static List<Board> getBoards(Board node) {
 		List<Board> list = new ArrayList<>();
 		List<Move> moves = node.getLegalMoves().collect(Collectors.toList());
+		branchingFactors.add(moves.size());
 		for (Move m : moves) {
-			Board b = node.makeMove(m);
+			//Board b = node.makeMove(m);
+			Board b = BoardMoveImpl.makeMove(node, m);
 			list.add(b);
 		}
 		return list;

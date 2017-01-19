@@ -29,7 +29,17 @@ public class MoveStack extends Move {
 		this.dir = dir;
 		this.dropCounts = Board.integerListToIntArray(dropCounts);
 		this.length = dropCounts.size();
-		this.count = 0;//dropCounts.stream().reduce(0, Integer::sum);
+		this.count = dropCounts.stream().reduce(0, Integer::sum);
+	}
+	
+	public MoveStack(Color color, int x, int y, Direction dir, List<Integer> dropCounts, int count) {
+		super(color);
+		this.x = x;
+		this.y = y;
+		this.dir = dir;
+		this.dropCounts = Board.integerListToIntArray(dropCounts);
+		this.length = dropCounts.size();
+		this.count = count;
 	}
 	
 	public boolean checkDropsValid() {

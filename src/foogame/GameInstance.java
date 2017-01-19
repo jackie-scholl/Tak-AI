@@ -52,7 +52,8 @@ public class GameInstance {
 	
 	public Optional<Color> runSingle() {
 		Move m = players.get(board.whoseTurn).getMove(board);
-		Board next = board.makeMove(m);
+		//Board next = board.makeMove(m);
+		Board next = BoardMoveImpl.makeMove(board, m);
 		GameUpdate update = new GameUpdate(next, m);
 		
 		observers.forEach(x -> x.acceptUpdate(update));
