@@ -28,17 +28,24 @@ public class Heuristics {
 
 	// closeness of our stones
 	private static double featureClustering(Board b, Color col) {
-		return Position.positionStream(b.size).filter(p -> Minimaxer.isColor(b, p, col)).mapToLong(p -> Arrays
-				.stream(Direction.values()).map(d -> p.move(d)).filter(p2 -> Minimaxer.isColor(b, p2, col)).count())
+		return Position.positionStream(b.size)
+				.filter(p -> Minimaxer.isColor(b, p, col))
+				.mapToLong(p -> Arrays
+						.stream(Direction.values()).map(d -> p.move(d)).filter(p2 -> Minimaxer.isColor(b, p2, col))
+						.count())
 				.sum();
 	}
-	
+
 	// closeness of our stones
 	private static double featureClustering2(Board b, Color col) {
-		return Position.positionStream(b.size).filter(p -> Minimaxer.isColor(b, p, col) && b.getStack(p).top().type != PieceType.WALL)
-			.mapToLong(p -> Arrays
-					.stream(Direction.values()).map(d -> p.move(d)).filter(p2 -> Minimaxer.isColor(b, p2, col)).count())
-			.sum();
+		return Position.positionStream(b.size)
+				.filter(p -> Minimaxer.isColor(b, p, col) && b.getStack(p).top().type != PieceType.WALL)
+				.mapToLong(p -> Arrays
+						.stream(Direction.values())
+						.map(d -> p.move(d))
+						.filter(p2 -> Minimaxer.isColor(b, p2, col))
+						.count())
+				.sum();
 	}
 
 	public static double heuristic0(Board b, Color col) {
