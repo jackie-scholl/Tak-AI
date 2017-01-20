@@ -62,7 +62,7 @@ public class GameInstance {
 		Optional<Color> result = board.hasAnyoneWon();
 		if (result.isPresent()) {
 			System.out.printf("Game finished! %s won%n", result.get().name());
-			if (SHOUTY) {
+			if (!SILENT) {
 				System.out.printf("average branching factor: %.1f%n", Minimaxer.branchingFactors.stream().mapToInt(x->x).average().getAsDouble());
 				System.out.printf("average top branching factor: %.1f%n", Minimaxer.topBranchingFactors.stream().mapToInt(x->x).average().getAsDouble());
 			}
