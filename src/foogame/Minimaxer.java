@@ -77,21 +77,24 @@ public class Minimaxer implements Player {
 	}
 
 	private MoveScorePair createMoveScorePair(Board board, Move m) {
-		return new MoveScorePair(
-				alphabeta(BoardMoveImpl.makeMove(board, m), depth, Double.NEGATIVE_INFINITY, Double.POSITIVE_INFINITY), m);
+		Board nextBoard = BoardMoveImpl.makeMove(board, m);
+		double score = alphabeta(nextBoard, depth, Double.NEGATIVE_INFINITY, Double.POSITIVE_INFINITY);
+		return new MoveScorePair(score, m, heuristic(nextBoard));
 	}
 
 	private static class MoveScorePair {
 		double score;
 		Move move;
+		double heuristic;
 
-		public MoveScorePair(double score, Move move) {
+		public MoveScorePair(double score, Move move, double heuristic) {
 			this.score = score;
 			this.move = move;
+			this.heuristic = heuristic;
 		}
 		
 		public String toString() {
-			return String.format("%s: %.3f", move.ptn(), score);
+			return String.format("%s: %.3f (%.3f)", move.ptn(), score, heuristic);
 		}
 	}
 	
