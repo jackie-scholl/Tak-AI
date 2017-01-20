@@ -32,7 +32,9 @@ public class Heuristics {
 		return Position.positionStream(b.size)
 				.filter(p -> Minimaxer.isColor(b, p, col))
 				.mapToLong(p -> Arrays
-						.stream(Direction.values()).map(d -> p.move(d)).filter(p2 -> Minimaxer.isColor(b, p2, col))
+						.stream(Direction.values())
+						.map(d -> p.move(d))
+						.filter(p2 -> Minimaxer.isColor(b, p2, col))
 						.count())
 				.sum();
 	}
@@ -44,8 +46,17 @@ public class Heuristics {
 				.mapToLong(p -> Arrays
 						.stream(Direction.values())
 						.map(d -> p.move(d))
-						.filter(p2 -> Minimaxer.isColor(b, p2, col))
+						.filter(p2 -> Minimaxer.isColor(b, p2, col) && b.getStack(p).top().type != PieceType.WALL)
 						.count())
+				.sum();
+	}
+	
+	private static double featureStackiness(Board b, Color col) {
+		return Position.positionStream(b.size)
+				.filter(p -> Minimaxer.isColor(b, p, col))
+				.map(b::getStack)
+				.mapToInt(Stack::length)
+				.map(x -> x * x)
 				.sum();
 	}
 
