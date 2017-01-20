@@ -92,6 +92,19 @@ public class Heuristics {
 		return c;
 	}
 	
+	private static double featureCapstoneHard(Board b, Color c) {
+		Optional<Position> pos = Position.positionStream(b.size)
+				.filter(p -> b.getStack(p).top().type == PieceType.CAPSTONE)
+				.findAny();
+		if (pos.isPresent()) {
+			Stone[] stones = b.getStack(pos.get()).getCopy();
+			if (stones.length > 1 && stones[stones.length - 1].color == c) {
+				return 1;
+			}
+		}
+		return 0;
+	}
+	
 	public static double heuristic0(Board b, Color col) {
 		double a1 = featureNumStonesOnBoard(b, col);
 		return a1 / 200;
