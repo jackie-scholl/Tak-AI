@@ -39,7 +39,7 @@ public class Heuristics {
 				.sum();
 	}
 
-	// closeness of our stones
+	// closeness of our stones and not walls
 	private static double featureClustering2(Board b, Color col) {
 		return Position.positionStream(b.size)
 				.filter(p -> Minimaxer.isColor(b, p, col) && b.getStack(p).top().type != PieceType.WALL)
@@ -65,13 +65,16 @@ public class Heuristics {
 		return b.getNumCapstones(col);
 	}
 	
-	// how many of our pieces are under our capstone
+	// how many of our pieces are under our capstone and reachable
 	private static double featureCapstoneControlSame(Board b, Color col) {
 		Optional<Position> pos = Position.positionStream(b.size).filter(p -> b.getStack(p).top().type == PieceType.CAPSTONE).findAny();
 		if (!pos.isPresent()) {
 			return 0;
 		}
 		Stone[] stones = b.getStack(pos.get()).getCopy();
+		if (stones.length > b.size) {
+			stones = Arrays.copyOfRange(stones, stones.length - b.size, stones.length-1);
+		}
 		if (stones.length == 1) {
 			return 0;
 		}
@@ -84,7 +87,7 @@ public class Heuristics {
 		return c;
 	}
 
-	// how many of their pieces are under our
+	// how many of their pieces are under our capstone and reachable
 	private static double featureCapstoneControlOther(Board b, Color col) {
 		Optional<Position> pos = Position.positionStream(b.size).filter(p -> b.getStack(p).top().type == PieceType.CAPSTONE).findAny();
 		if (!pos.isPresent()) {
@@ -93,6 +96,9 @@ public class Heuristics {
 		Stone[] stones = b.getStack(pos.get()).getCopy();
 		if (stones.length == 1) {
 			return 0;
+		}
+		if (stones.length > b.size) {
+			stones = Arrays.copyOfRange(stones, stones.length - b.size, stones.length-1);
 		}
 		int c = 0;
 		for (int i = 0; i < stones.length - 2; i++) {
@@ -103,14 +109,18 @@ public class Heuristics {
 		return c;
 	}
 	
+	// returns 1 if capstone is hard, -1 if soft, else 0
 	private static double featureCapstoneHard(Board b, Color c) {
 		Optional<Position> pos = Position.positionStream(b.size)
 				.filter(p -> b.getStack(p).top().type == PieceType.CAPSTONE)
 				.findAny();
 		if (pos.isPresent()) {
 			Stone[] stones = b.getStack(pos.get()).getCopy();
-			if (stones.length > 1 && stones[stones.length - 1].color == c) {
-				return 1;
+			if (stones.length > 1) {
+				if (stones[stones.length - 1].color == c) {
+					return 1;
+				}
+				return -1;
 			}
 		}
 		return 0;
