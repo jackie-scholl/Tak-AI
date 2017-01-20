@@ -3,6 +3,7 @@ package foogame;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 import java.util.function.BiFunction;
 
 public class Heuristics {
@@ -33,6 +34,49 @@ public class Heuristics {
 				.sum();
 	}
 
+	// how many capstones we have in our hand
+	private static double featureCapstone(Board b, Color col) {
+		return b.getNumCapstones(col);
+	}
+	
+	// how many of our pieces are under our capstone
+	private static double featureCapstoneControlSame(Board b, Color col) {
+		Optional<Position> pos = Position.positionStream(b.size).filter(p -> b.getStack(p).top().type == PieceType.CAPSTONE).findAny();
+		if (!pos.isPresent()) {
+			return 0;
+		}
+		Stone[] stones = b.getStack(pos.get()).getCopy();
+		if (stones.length == 1) {
+			return 0;
+		}
+		int c = 0;
+		for (int i = 0; i < stones.length - 2; i++) {
+			if (stones[i].color == col) {
+				c++;
+			}
+		}
+		return c;
+	}
+
+	// how many of their pieces are under our
+	private static double featureCapstoneControlOther(Board b, Color col) {
+		Optional<Position> pos = Position.positionStream(b.size).filter(p -> b.getStack(p).top().type == PieceType.CAPSTONE).findAny();
+		if (!pos.isPresent()) {
+			return 0;
+		}
+		Stone[] stones = b.getStack(pos.get()).getCopy();
+		if (stones.length == 1) {
+			return 0;
+		}
+		int c = 0;
+		for (int i = 0; i < stones.length - 2; i++) {
+			if (stones[i].color != col) {
+				c++;
+			}
+		}
+		return c;
+	}
+	
 	public static double heuristic0(Board b, Color col) {
 		double a1 = featureNumStonesOnBoard(b, col);
 		return a1 / 200;
