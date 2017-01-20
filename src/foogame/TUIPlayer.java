@@ -23,13 +23,15 @@ public class TUIPlayer implements Player {
 	}
 
 	public Move getMove(Board board) {
-		//3 5
-		//3 5 UP
+		long startTime = System.currentTimeMillis();
 		while (true) {
 			String result = System.console().readLine("Make move (%s): ", board.whoseTurn.name());
 			//Optional<Move> move = parseMove(board, result);
 			Optional<Move> move = parseMove2(board, result);
 			if (move.isPresent()) {
+				long endTime = System.currentTimeMillis();
+				double timeTaken = (endTime - startTime) / 1000.0;
+				System.out.printf("Cow took %.1f seconds%n", timeTaken);
 				return move.get();
 			}
 		}
