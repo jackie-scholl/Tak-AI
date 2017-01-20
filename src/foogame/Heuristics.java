@@ -13,6 +13,7 @@ public class Heuristics {
 		HEURISTIC_MAP.put(0, Heuristics::heuristic0);
 		HEURISTIC_MAP.put(1, Heuristics::heuristic1);
 		HEURISTIC_MAP.put(2, Heuristics::heuristic2);
+		HEURISTIC_MAP.put(3, Heuristics::heuristic3);
 		// System.out.println("setting heuristic map");
 		// System.out.println(HEURISTIC_MAP);
 	}
@@ -67,7 +68,7 @@ public class Heuristics {
 	
 	// how many of our pieces are under our capstone and reachable
 	private static double featureCapstoneControlSame(Board b, Color col) {
-		Optional<Position> pos = Position.positionStream(b.size).filter(p -> b.getStack(p).top().type == PieceType.CAPSTONE).findAny();
+		Optional<Position> pos = Position.positionStream(b.size).filter(p -> !b.getStack(p).isEmpty() && b.getStack(p).top().type == PieceType.CAPSTONE).findAny();
 		if (!pos.isPresent()) {
 			return 0;
 		}
@@ -89,7 +90,7 @@ public class Heuristics {
 
 	// how many of their pieces are under our capstone and reachable
 	private static double featureCapstoneControlOther(Board b, Color col) {
-		Optional<Position> pos = Position.positionStream(b.size).filter(p -> b.getStack(p).top().type == PieceType.CAPSTONE).findAny();
+		Optional<Position> pos = Position.positionStream(b.size).filter(p -> !b.getStack(p).isEmpty() && b.getStack(p).top().type == PieceType.CAPSTONE).findAny();
 		if (!pos.isPresent()) {
 			return 0;
 		}
@@ -112,7 +113,7 @@ public class Heuristics {
 	// returns 1 if capstone is hard, -1 if soft, else 0
 	private static double featureCapstoneHard(Board b, Color c) {
 		Optional<Position> pos = Position.positionStream(b.size)
-				.filter(p -> b.getStack(p).top().type == PieceType.CAPSTONE)
+				.filter(p -> !b.getStack(p).isEmpty() && b.getStack(p).top().type == PieceType.CAPSTONE)
 				.findAny();
 		if (pos.isPresent()) {
 			Stone[] stones = b.getStack(pos.get()).getCopy();
@@ -142,5 +143,16 @@ public class Heuristics {
 		double a2 = featureNumStones(b, col);
 		double a3 = featureClustering(b, col);
 		return a1 / 200 + a2 / -200 + a3 / 400;
+	}
+	
+	public static double heuristic3(Board b, Color col) {
+		double a1 = featureNumStonesOnBoard(b, col);
+		double a2 = featureNumStones(b, col);
+		double a3 = featureClustering(b, col);
+		double a4 = featureCapstone(b, col);
+		double a5 = featureCapstoneHard(b, col);
+		double a6 = featureCapstoneControlSame(b, col);
+		double a7 = featureCapstoneControlOther(b, col);
+		return (a1 / 200) + (a2 / -400) + (a3 / 300) + (a4 / -200) + ( a5 / 400) + (a6 / 400) + (a7 / -400);
 	}
 }
