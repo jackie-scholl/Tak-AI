@@ -89,7 +89,6 @@ public class GameInstance {
 	
 	public static void main(String... args) throws IOException {
 		long start = System.nanoTime();
-		//GameInstance game = new GameInstance(new TUIPlayer(), new Minimaxer());
 		Player player1 = parsePlayer(args[0]);
 		Player player2 = parsePlayer(args[1]);
 		GameInstance game = new GameInstance(player1, player2);
@@ -115,7 +114,6 @@ public class GameInstance {
 			return parseMinimaxPlayer(s);
 		} else {
 			throw new RuntimeException("bad argument");
-			//return new Artificial.Artifical1();
 		}
 	}
 	
