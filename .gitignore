@@ -16,3 +16,4 @@ src/foogame/Artificial$Artifical2.class
 *.class
 *.ptn
 game.out.ptn
+target/*

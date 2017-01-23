@@ -25,10 +25,5 @@
     </plugins>
   </build>
   <dependencies>
-  	<dependency>
-  		<groupId>com.google.guava</groupId>
-  		<artifactId>guava</artifactId>
-  		<version>21</version>
-  	</dependency>
   </dependencies>
 </project>
