@@ -61,9 +61,9 @@ public class Heuristics {
 				.sum();
 	}
 
-	// how many capstones we have in our hand
-	private static double featureCapstone(Board b, Color col) {
-		return b.getNumCapstones(col);
+	// how many capstones we have in our hand IF theyve played theirs
+	private static double featureCapstoneUsThem(Board b, Color col) {
+		return b.getNumCapstones(col.other()) < 1 ? b.getNumCapstones(col) : 0;
 	}
 	
 	// how many of our pieces are under our capstone and reachable
@@ -149,10 +149,10 @@ public class Heuristics {
 		double a1 = featureNumStonesOnBoard(b, col);
 		double a2 = featureNumStones(b, col);
 		double a3 = featureClustering(b, col);
-		double a4 = featureCapstone(b, col);
+		double a4 = featureCapstoneUsThem(b, col);
 		double a5 = featureCapstoneHard(b, col);
 		double a6 = featureCapstoneControlSame(b, col);
 		double a7 = featureCapstoneControlOther(b, col);
-		return (a1 / 200) + (a2 / -400) + (a3 / 300) + (a4 / -200) + ( a5 / 400) + (a6 / 400) + (a7 / -400);
+		return (a1 / 200) + (a2 / -400) + (a3 / 300) + (a4 / -400) + ( a5 / 400) + (a6 / 400) + (a7 / -400);
 	}
 }
