@@ -43,14 +43,18 @@ public class Minimaxer implements Player {
 		topBranchingFactors.add(moveScorePairs.size());
 		
 		Collections.shuffle(moveScorePairs);
+		
+		Collections.sort(moveScorePairs, (x, y) -> Double.compare(y.heuristic, x.heuristic));
+		
+		Collections.sort(moveScorePairs, (x, y) -> Double.compare(y.score, x.score));
 
-		MoveScorePair moveScorePair = moveScorePairs
-				.stream()
+		MoveScorePair moveScorePair = moveScorePairs.get(0);
+				/*.stream()
 				.max((x, y) -> Double.compare(x.score, y.score))
-				.get();
+				.get();*/
 		
 		if (GameInstance.SHOUTY) {
-			Collections.sort(moveScorePairs, (x, y) -> Double.compare(y.score, x.score));
+			//Collections.sort(moveScorePairs, (x, y) -> Double.compare(y.score, x.score));
 			System.out.println(moveScorePairs);
 		}
 		
@@ -67,8 +71,8 @@ public class Minimaxer implements Player {
 			}
 			long end = System.currentTimeMillis();
 			double difference = (end-start)/1000.0;
+			System.out.printf("Time taken: %.1f seconds; score: %.3f%n", difference, score);
 			if (GameInstance.SHOUTY) {
-				System.out.printf("Time taken: %.1f seconds; score: %.3f%n", difference, score);
 				System.out.printf("Moves considered: %d, top branching factor: %d%n", movesConsidered, moveScorePairs.size());
 			}
 		}
