@@ -29,12 +29,23 @@ public class TPNInput {
 		List<String> lines = new ArrayList<String>();
 		String line = in.readLine();
 		while (line != null) {
-			lines.add(line);
+			// process out lines and stuff
+			if (line.length() != 0 && line.charAt(0) != '[') {
+				lines.add(line);
+			}
 			line = in.readLine();
 		}
 		for (String str : lines) {
 			System.out.println(str);
 		}
+		doMovesAndThings(lines);
+	}
+	
+	private static void doMovesAndThings(List<String> lines) {
+		for (String line : lines) {
+			System.out.println(line);
+		}
+		System.out.println(lines.size());
 	}
 
 }
