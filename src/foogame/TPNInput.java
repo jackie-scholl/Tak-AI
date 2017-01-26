@@ -35,17 +35,20 @@ public class TPNInput {
 			}
 			line = in.readLine();
 		}
-		for (String str : lines) {
-			System.out.println(str);
-		}
 		doMovesAndThings(lines);
 	}
 	
 	private static void doMovesAndThings(List<String> lines) {
 		for (String line : lines) {
-			System.out.println(line);
+			// removes the "1. " part of the move line
+			line = line.substring(line.indexOf(" ")+1);
+			//System.out.println(line);
+			String whiteMove = line.substring(0, line.indexOf(" "));
+			String blackMove = line.substring(line.indexOf(" ")+1);
+			System.out.printf("White's Move: %s%n", whiteMove);
+			System.out.printf("Blacks's Move: %s%n", blackMove);
 		}
-		System.out.println(lines.size());
+		//System.out.println(lines.size());
 	}
 
 }
