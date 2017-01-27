@@ -75,25 +75,12 @@ public class TPNInput {
 		out.append(turn + " ");
 		// the features we measure
 		Map<Integer, BiFunction<Board, Color, Double>> h = Heuristics.getFeatureMap();
-		double f0 = h.get(0).apply(b, col);
-		double f1 = h.get(1).apply(b, col);
-		double f2 = h.get(2).apply(b, col);
-		double f3 = h.get(3).apply(b, col);
-		double f4 = h.get(4).apply(b, col);
-		double f5 = h.get(5).apply(b, col);
-		double f6 = h.get(6).apply(b, col);
-		double f7 = h.get(7).apply(b, col);
-		double f8 = h.get(8).apply(b, col);
-
-		out.append(f0 + " ");
-		out.append(f1 + " ");
-		out.append(f2 + " ");
-		out.append(f3 + " ");
-		out.append(f4 + " ");
-		out.append(f5 + " ");
-		out.append(f6 + " ");
-		out.append(f7 + " ");
-		out.append(f8 + " ");
+		
+		int[] featuresWeWant = new int[] {0, 1, 2, 3, 4, 5, 6, 7, 8};
+		for (int i : featuresWeWant) {
+			double f = h.get(i).apply(b, col);
+			out.append(f + " ");
+		}
 
 		return out.toString();
 	}
