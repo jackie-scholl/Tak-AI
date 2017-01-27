@@ -31,6 +31,7 @@ public class TPNInput {
 			}
 		}
 		bfOut.flush();
+		bfOut.close();
 	}
 
 	private static List<String> processFile(File f) throws IOException {
