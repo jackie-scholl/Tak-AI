@@ -30,18 +30,26 @@ public class TPNInput {
 		BufferedReader in = new BufferedReader(new FileReader(f));
 		List<String> lines = new ArrayList<String>();
 		String line = in.readLine();
+		Color winner = Color.WHITE;
 		while (line != null) {
 			// process out lines and stuff
+			
+			if (line.contains("Result")) {
+				String res = line.substring(line.indexOf("\"") + 1, line.indexOf("\"") + 4);
+				if (res.indexOf("0") == 0) {
+					winner = Color.BLACK;
+				}
+			}
 			if (line.length() != 0 && line.charAt(0) != '[' && line.charAt(0) != ' ') {
 				lines.add(line);
 			}
 			line = in.readLine();
 		}
-		doMovesAndThings(lines);
+		doMovesAndThings(lines, winner);
 		in.close();
 	}
 
-	private static void doMovesAndThings(List<String> lines) {
+	private static void doMovesAndThings(List<String> lines, Color winner) {
 		Board b0 = new Board(5); // there has to be a better way to
 		Board b = new Board(b0.getBoardArray());
 
@@ -49,7 +57,7 @@ public class TPNInput {
 			// removes the "1. " part of the move line
 			String turnNumString = lineFull.substring(0, lineFull.indexOf(" "));
 			String line = lineFull.substring(lineFull.indexOf(" ") + 1);
-			System.out.println(line);
+			// System.out.println(line);
 			String whiteMove;
 			if (line.indexOf(" ") == -1 && line.length() > 0) {
 				whiteMove = line;
@@ -57,25 +65,26 @@ public class TPNInput {
 				whiteMove = line.substring(0, line.indexOf(" "));
 			}
 			line = line.replace(whiteMove, "");
-			System.out.println(line.length());
 			String blackMove = line.substring(line.indexOf(" ") + 1);
 			if (blackMove.contains("{")) {
 				blackMove = blackMove.substring(0, blackMove.indexOf("{") - 1);
 			}
 			int turn = Integer.parseInt(turnNumString.substring(0, turnNumString.indexOf(".")));
-			// System.out.println(turnNumString);
+			String whiteWin = winner == Color.WHITE ? "1 " : "-1 ";
+			String blackWin = winner == Color.BLACK ? "1 " : "-1 ";
+			
 			// make the move and update the board
 			Move mWhite = simMove(b, whiteMove).get();
 			// System.out.printf("White Move: %s%n", mWhite.ptn());
 			b = BoardMoveImpl.makeMove(b, mWhite);
-			// System.out.println(calculateFeatureScores(b, Color.WHITE, turn));
-
+			System.out.println(whiteWin + calculateFeatureScores(b, Color.WHITE, turn));
+			
+			
 			if (blackMove.length() > 1) {
 				Move mBlack = simMove(b, blackMove).get();
 				// System.out.printf("Black Move: %s%n", mBlack.ptn());
 				b = BoardMoveImpl.makeMove(b, mBlack);
-				// System.out.println(calculateFeatureScores(b, Color.BLACK,
-				// turn));
+				System.out.println(blackWin + calculateFeatureScores(b, Color.BLACK, turn));
 			}
 
 		}
