@@ -2,15 +2,12 @@ package foogame;
 
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -46,33 +43,61 @@ public class TPNInput {
 
 	private static void doMovesAndThings(List<String> lines) {
 		Board b0 = new Board(5); // there has to be a better way to
-		Board b = new Board(b0.getBoardArray()); // do this but im not seeing it
-		Map <Board, Double> whiteMoveScoreMap = new LinkedHashMap<Board, Double>();
-		Map <Board, Double> blackMoveScoreMap = new LinkedHashMap<Board, Double>();
-		BiFunction<Board, Color, Double> heuristic = Heuristics.HEURISTIC_MAP.get(3); //change heuristic num here
-		System.out.println(lines.size());
+
 		for (String lineFull : lines) {
+			Board b = new Board(b0.getBoardArray());
 			// removes the "1. " part of the move line
 			String turnNumString = lineFull.substring(0, lineFull.indexOf(" "));
 			String line = lineFull.substring(lineFull.indexOf(" ") + 1);
 			String whiteMove = line.substring(0, line.indexOf(" "));
 			String blackMove = line.substring(line.indexOf(" ") + 1);
-			
-			System.out.println(turnNumString);
+			if (blackMove.contains("{")) {
+				blackMove = blackMove.substring(0,blackMove.indexOf("{")-1);
+			}
+			int turn = Integer.parseInt(turnNumString.substring(0, turnNumString.indexOf(".")));
+
+			// System.out.println(turnNumString);
 			// make the move and update the board
 			Move mWhite = simMove(b, whiteMove).get();
-			double whiteScore = heuristic.apply(b, Color.WHITE) - heuristic.apply(b, Color.BLACK);
-			System.out.printf("White Move: %s resulted in score %f%n", mWhite.ptn(), whiteScore);
+			System.out.printf("White Move: %s%n", mWhite.ptn());
 			b = BoardMoveImpl.makeMove(b, mWhite);
-			
+			//System.out.println(calculateFeatureScores(b, Color.WHITE, turn));
+
 			Move mBlack = simMove(b, blackMove).get();
-			double blackScore = heuristic.apply(b, Color.BLACK) - heuristic.apply(b, Color.WHITE);
-			System.out.printf("Black Move: %s resulted in score %f%n", mBlack.ptn(), blackScore);
+			System.out.printf("Black Move: %s%n", mBlack.ptn());
 			b = BoardMoveImpl.makeMove(b, mBlack);
-			
-			//System.out.printf("WhiteMove Heuristic: %f", heuristic.apply(b, Color.WHITE));
+			//System.out.println(calculateFeatureScores(b, Color.BLACK, turn));
+			// Color.WHITE));
 
 		}
+	}
+
+	public static String calculateFeatureScores(Board b, Color col, int turn) {
+		StringBuilder out = new StringBuilder();
+		out.append(turn + " ");
+		// the features we measure
+		Map<Integer, BiFunction<Board, Color, Double>> h = Heuristics.getFeatureMap();
+		double f0 = h.get(0).apply(b, col);
+		double f1 = h.get(1).apply(b, col);
+		double f2 = h.get(2).apply(b, col);
+		double f3 = h.get(3).apply(b, col);
+		double f4 = h.get(4).apply(b, col);
+		double f5 = h.get(5).apply(b, col);
+		double f6 = h.get(6).apply(b, col);
+		double f7 = h.get(7).apply(b, col);
+		double f8 = h.get(8).apply(b, col);
+
+		out.append(f0 + " ");
+		out.append(f1 + " ");
+		out.append(f2 + " ");
+		out.append(f3 + " ");
+		out.append(f4 + " ");
+		out.append(f5 + " ");
+		out.append(f6 + " ");
+		out.append(f7 + " ");
+		out.append(f8 + " ");
+
+		return out.toString();
 	}
 
 	public static Optional<Move> simMove(Board board, String moveTPN) {
