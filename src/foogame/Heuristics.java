@@ -31,6 +31,10 @@ public class Heuristics {
 		FEATURE_MAP.put(8,  Heuristics::featureCapstoneHard);
 	}
 	
+	private Heuristics() {
+		// prevent accidental instantiation
+	}
+	
 	public static Map<Integer, BiFunction<Board, Color, Double>> getFeatureMap() {
 		return FEATURE_MAP;
 	}

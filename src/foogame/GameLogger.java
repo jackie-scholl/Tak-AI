@@ -33,11 +33,17 @@ public class GameLogger implements GameObserver {
 
 	public static String stringifyUpdate(GameUpdate update) {
 		StringBuilder b = new StringBuilder();
-		Board board = update.board;
-		int size = board.size;
 		// print out new board
 		b.append(String.format("Last move: %s%n", update.last.ptn()));
 		b.append(String.format("Move by %s resulted in board:%n", update.last.color));
+		b.append(stringifyBoard(update.board));
+
+		return b.toString();
+	}
+	
+	public static String stringifyBoard(Board board) {
+		StringBuilder b = new StringBuilder();
+		int size = board.size;
 		b.append("+----------+\n");
 		for (int i = 0; i < size; i++) {
 			b.append("|");
@@ -55,7 +61,6 @@ public class GameLogger implements GameObserver {
 		b.append("+----------+\n");
 		b.append(String.format("Num stones left: %s%n", board.getNumStones()));
 		b.append(String.format("Board spots: %s%n", board.numStonesOnBoard()));
-
 		return b.toString();
 	}
 

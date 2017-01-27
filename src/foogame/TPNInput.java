@@ -7,20 +7,23 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 import java.util.function.BiFunction;
 import java.util.stream.Collectors;
 
 public class TPNInput {
 
 	public static void main(String args[]) throws IOException {
-		List<File> filesInFolder = Files.walk(Paths.get("IncomingPTN")).filter(Files::isRegularFile).map(Path::toFile)
+		List<File> filesToProcess = Arrays.stream(args)
+				.map(Paths::get)
+				.filter(Files::isRegularFile)
+				.map(Path::toFile)
 				.collect(Collectors.toList());
+		// List<File> filesInFolder =
+		// Files.walk(Paths.get("D:\\Workspace\\Tak\\IncomingPTN")).filter(Files::isRegularFile)
+		// .map(Path::toFile).collect(Collectors.toList());
 
-		for (File f : filesInFolder) {
+		for (File f : filesToProcess) {
 			System.out.println(f.toString());
 			processFile(f);
 		}
@@ -43,9 +46,9 @@ public class TPNInput {
 
 	private static void doMovesAndThings(List<String> lines) {
 		Board b0 = new Board(5); // there has to be a better way to
-
-		for (String lineFull : lines) {
-			Board b = new Board(b0.getBoardArray());
+		Board b = new Board(b0.getBoardArray());
+		
+		for (String lineFull : lines) {	
 			// removes the "1. " part of the move line
 			String turnNumString = lineFull.substring(0, lineFull.indexOf(" "));
 			String line = lineFull.substring(lineFull.indexOf(" ") + 1);
