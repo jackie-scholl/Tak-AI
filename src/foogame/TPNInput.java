@@ -7,20 +7,23 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 import java.util.function.BiFunction;
 import java.util.stream.Collectors;
 
 public class TPNInput {
 
 	public static void main(String args[]) throws IOException {
-		List<File> filesInFolder = Files.walk(Paths.get("D:\\Workspace\\Tak\\IncomingPTN")).filter(Files::isRegularFile)
-				.map(Path::toFile).collect(Collectors.toList());
+		List<File> filesToProcess = Arrays.stream(args)
+				.map(Paths::get)
+				.filter(Files::isRegularFile)
+				.map(Path::toFile)
+				.collect(Collectors.toList());
+		// List<File> filesInFolder =
+		// Files.walk(Paths.get("D:\\Workspace\\Tak\\IncomingPTN")).filter(Files::isRegularFile)
+		// .map(Path::toFile).collect(Collectors.toList());
 
-		for (File f : filesInFolder) {
+		for (File f : filesToProcess) {
 			System.out.println(f.toString());
 			processFile(f);
 		}
@@ -52,7 +55,7 @@ public class TPNInput {
 			String whiteMove = line.substring(0, line.indexOf(" "));
 			String blackMove = line.substring(line.indexOf(" ") + 1);
 			if (blackMove.contains("{")) {
-				blackMove = blackMove.substring(0,blackMove.indexOf("{")-1);
+				blackMove = blackMove.substring(0, blackMove.indexOf("{") - 1);
 			}
 			int turn = Integer.parseInt(turnNumString.substring(0, turnNumString.indexOf(".")));
 			// System.out.println(turnNumString);
@@ -60,12 +63,12 @@ public class TPNInput {
 			Move mWhite = simMove(b, whiteMove).get();
 			System.out.printf("White Move: %s%n", mWhite.ptn());
 			b = BoardMoveImpl.makeMove(b, mWhite);
-			//System.out.println(calculateFeatureScores(b, Color.WHITE, turn));
+			// System.out.println(calculateFeatureScores(b, Color.WHITE, turn));
 
 			Move mBlack = simMove(b, blackMove).get();
 			System.out.printf("Black Move: %s%n", mBlack.ptn());
 			b = BoardMoveImpl.makeMove(b, mBlack);
-			//System.out.println(calculateFeatureScores(b, Color.BLACK, turn));
+			// System.out.println(calculateFeatureScores(b, Color.BLACK, turn));
 
 		}
 	}
@@ -75,8 +78,8 @@ public class TPNInput {
 		out.append(turn + " ");
 		// the features we measure
 		Map<Integer, BiFunction<Board, Color, Double>> h = Heuristics.getFeatureMap();
-		
-		int[] featuresWeWant = new int[] {0, 1, 2, 3, 4, 5, 6, 7, 8};
+
+		int[] featuresWeWant = new int[] { 0, 1, 2, 3, 4, 5, 6, 7, 8 };
 		for (int i : featuresWeWant) {
 			double f = h.get(i).apply(b, col);
 			out.append(f + " ");
