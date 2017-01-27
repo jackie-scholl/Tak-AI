@@ -2,7 +2,6 @@ package foogame;
 
 import java.util.*;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 import java.util.function.*;
 
 /** Alpha-beta minimaxer, using the heuristic to order possible moves to achieve good pruning. */

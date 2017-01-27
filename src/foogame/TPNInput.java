@@ -46,9 +46,9 @@ public class TPNInput {
 
 	private static void doMovesAndThings(List<String> lines) {
 		Board b0 = new Board(5); // there has to be a better way to
-
-		for (String lineFull : lines) {
-			Board b = new Board(b0.getBoardArray());
+		Board b = new Board(b0.getBoardArray());
+		
+		for (String lineFull : lines) {	
 			// removes the "1. " part of the move line
 			String turnNumString = lineFull.substring(0, lineFull.indexOf(" "));
 			String line = lineFull.substring(lineFull.indexOf(" ") + 1);
