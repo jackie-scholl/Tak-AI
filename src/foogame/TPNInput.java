@@ -82,7 +82,11 @@ public class TPNInput {
 			int turn = Integer.parseInt(turnNumString.substring(0, turnNumString.indexOf(".")));
 			String whiteWin = winner == Color.WHITE ? "1 " : "-1 ";
 			String blackWin = winner == Color.BLACK ? "1 " : "-1 ";
-
+			if (turn == 1) {
+				String temp = blackWin;
+				blackWin = whiteWin;
+				whiteWin = temp;
+			}
 			// make the move and update the board
 			Move mWhite = simMove(b, whiteMove).get();
 			// System.out.printf("White Move: %s%n", mWhite.ptn());
