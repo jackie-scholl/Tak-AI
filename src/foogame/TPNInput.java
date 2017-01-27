@@ -55,7 +55,6 @@ public class TPNInput {
 				blackMove = blackMove.substring(0,blackMove.indexOf("{")-1);
 			}
 			int turn = Integer.parseInt(turnNumString.substring(0, turnNumString.indexOf(".")));
-
 			// System.out.println(turnNumString);
 			// make the move and update the board
 			Move mWhite = simMove(b, whiteMove).get();
@@ -67,7 +66,6 @@ public class TPNInput {
 			System.out.printf("Black Move: %s%n", mBlack.ptn());
 			b = BoardMoveImpl.makeMove(b, mBlack);
 			//System.out.println(calculateFeatureScores(b, Color.BLACK, turn));
-			// Color.WHITE));
 
 		}
 	}
@@ -107,6 +105,7 @@ public class TPNInput {
 		}
 		if (!board.isLegalMove(m.get())) {
 			System.err.printf("Illegal move: %s%n", moveTPN);
+			System.err.printf("Does the system see this as a legal move: %b%n", board.isLegalMove(m.get()));
 			return Optional.empty();
 		}
 		return m;
