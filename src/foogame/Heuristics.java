@@ -8,6 +8,7 @@ import java.util.function.BiFunction;
 
 public class Heuristics {
 	public static final Map<Integer, BiFunction<Board, Color, Double>> HEURISTIC_MAP = new HashMap<>();
+	public static final Map<Integer, BiFunction<Board, Color, Double>> FEATURE_MAP = new HashMap<>();
 
 	static {
 		HEURISTIC_MAP.put(0, Heuristics::heuristic0);
@@ -16,6 +17,22 @@ public class Heuristics {
 		HEURISTIC_MAP.put(3, Heuristics::heuristic3);
 		// System.out.println("setting heuristic map");
 		// System.out.println(HEURISTIC_MAP);
+	}
+	
+	static {
+		FEATURE_MAP.put(0,  Heuristics::featureNumStonesOnBoard);
+		FEATURE_MAP.put(1,  Heuristics::featureNumStones);
+		FEATURE_MAP.put(2,  Heuristics::featureClustering);
+		FEATURE_MAP.put(3,  Heuristics::featureClustering2);
+		FEATURE_MAP.put(4,  Heuristics::featureStackiness);
+		FEATURE_MAP.put(5,  Heuristics::featureCapstoneUsThem);
+		FEATURE_MAP.put(6,  Heuristics::featureCapstoneControlSame);
+		FEATURE_MAP.put(7,  Heuristics::featureCapstoneControlOther);
+		FEATURE_MAP.put(8,  Heuristics::featureCapstoneHard);
+	}
+	
+	public Map<Integer, BiFunction<Board, Color, Double>> getFeatureMap() {
+		return FEATURE_MAP;
 	}
 
 	// flat count
