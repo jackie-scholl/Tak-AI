@@ -14,10 +14,7 @@ import java.util.stream.Collectors;
 public class TPNInput {
 
 	public static void main(String args[]) throws IOException {
-		List<File> filesToProcess = Arrays.stream(args)
-				.map(Paths::get)
-				.filter(Files::isRegularFile)
-				.map(Path::toFile)
+		List<File> filesToProcess = Arrays.stream(args).map(Paths::get).filter(Files::isRegularFile).map(Path::toFile)
 				.collect(Collectors.toList());
 		// List<File> filesInFolder =
 		// Files.walk(Paths.get("D:\\Workspace\\Tak\\IncomingPTN")).filter(Files::isRegularFile)
@@ -47,8 +44,8 @@ public class TPNInput {
 	private static void doMovesAndThings(List<String> lines) {
 		Board b0 = new Board(5); // there has to be a better way to
 		Board b = new Board(b0.getBoardArray());
-		
-		for (String lineFull : lines) {	
+
+		for (String lineFull : lines) {
 			// removes the "1. " part of the move line
 			String turnNumString = lineFull.substring(0, lineFull.indexOf(" "));
 			String line = lineFull.substring(lineFull.indexOf(" ") + 1);
@@ -73,10 +70,13 @@ public class TPNInput {
 			b = BoardMoveImpl.makeMove(b, mWhite);
 			// System.out.println(calculateFeatureScores(b, Color.WHITE, turn));
 
-			Move mBlack = simMove(b, blackMove).get();
-			// System.out.printf("Black Move: %s%n", mBlack.ptn());
-			b = BoardMoveImpl.makeMove(b, mBlack);
-			// System.out.println(calculateFeatureScores(b, Color.BLACK, turn));
+			if (blackMove.length() > 1) {
+				Move mBlack = simMove(b, blackMove).get();
+				// System.out.printf("Black Move: %s%n", mBlack.ptn());
+				b = BoardMoveImpl.makeMove(b, mBlack);
+				// System.out.println(calculateFeatureScores(b, Color.BLACK,
+				// turn));
+			}
 
 		}
 	}
