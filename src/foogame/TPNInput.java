@@ -57,15 +57,17 @@ public class TPNInput {
 			String line = lineFull.substring(lineFull.indexOf(" ") + 1);
 			String whiteMove = line.substring(0, line.indexOf(" "));
 			String blackMove = line.substring(line.indexOf(" ") + 1);
-			//System.out.printf("White's Move: %s%n", whiteMove);
-			//System.out.printf("Blacks's Move: %s%n", blackMove);
-			// make the move and update the board
+			
 			System.out.println(turnNumString);
+			// make the move and update the board
 			Move mWhite = simMove(b, whiteMove).get();
-			System.out.println("Move is: " + mWhite.ptn());
+			double whiteScore = heuristic.apply(b, Color.WHITE) - heuristic.apply(b, Color.BLACK);
+			System.out.printf("White Move: %s resulted in score %f%n", mWhite.ptn(), whiteScore);
 			b = BoardMoveImpl.makeMove(b, mWhite);
+			
 			Move mBlack = simMove(b, blackMove).get();
-			System.out.println("Move is: " + mBlack.ptn());
+			double blackScore = heuristic.apply(b, Color.BLACK) - heuristic.apply(b, Color.WHITE);
+			System.out.printf("Black Move: %s resulted in score %f%n", mBlack.ptn(), blackScore);
 			b = BoardMoveImpl.makeMove(b, mBlack);
 			
 			//System.out.printf("WhiteMove Heuristic: %f", heuristic.apply(b, Color.WHITE));
