@@ -35,7 +35,7 @@ public class Heuristics {
 		// prevent accidental instantiation
 	}
 	
-	public Map<Integer, BiFunction<Board, Color, Double>> getFeatureMap() {
+	public static Map<Integer, BiFunction<Board, Color, Double>> getFeatureMap() {
 		return FEATURE_MAP;
 	}
 
