@@ -47,7 +47,6 @@ public class PTNInput {
 		int count = parseInt(input.charAt(0));
 		int col = parseColumn(input.charAt(1));
 		int row = parseRow(input.charAt(2));
-		System.out.println(input.substring(3, 4));
 		Direction dir = Arrays.stream(Direction.values()).filter(x -> input.substring(3, 4).equals(x.notationName)).findFirst().get();
 		int[] counts = new int[]{count};
 		if (input.length() > 4) {
@@ -72,7 +71,5 @@ public class PTNInput {
 	private static int parseInt(char c) {
 		return Integer.parseInt(String.valueOf(c));
 	}
-	
-	
 
 }
