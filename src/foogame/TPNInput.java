@@ -17,8 +17,8 @@ import java.util.stream.Collectors;
 public class TPNInput {
 
 	public static void main(String args[]) throws IOException {
-		List<File> filesInFolder = Files.walk(Paths.get("D:\\Workspace\\Tak\\IncomingPTN")).filter(Files::isRegularFile)
-				.map(Path::toFile).collect(Collectors.toList());
+		List<File> filesInFolder = Files.walk(Paths.get("IncomingPTN")).filter(Files::isRegularFile).map(Path::toFile)
+				.collect(Collectors.toList());
 
 		for (File f : filesInFolder) {
 			System.out.println(f.toString());
@@ -49,23 +49,31 @@ public class TPNInput {
 			// removes the "1. " part of the move line
 			String turnNumString = lineFull.substring(0, lineFull.indexOf(" "));
 			String line = lineFull.substring(lineFull.indexOf(" ") + 1);
-			String whiteMove = line.substring(0, line.indexOf(" "));
+			System.out.println(line);
+			String whiteMove;
+			if (line.indexOf(" ") == -1 && line.length() > 0) {
+				whiteMove = line;
+			} else {
+				whiteMove = line.substring(0, line.indexOf(" "));
+			}
+			line = line.replace(whiteMove, "");
+			System.out.println(line.length());
 			String blackMove = line.substring(line.indexOf(" ") + 1);
 			if (blackMove.contains("{")) {
-				blackMove = blackMove.substring(0,blackMove.indexOf("{")-1);
+				blackMove = blackMove.substring(0, blackMove.indexOf("{") - 1);
 			}
 			int turn = Integer.parseInt(turnNumString.substring(0, turnNumString.indexOf(".")));
 			// System.out.println(turnNumString);
 			// make the move and update the board
 			Move mWhite = simMove(b, whiteMove).get();
-			System.out.printf("White Move: %s%n", mWhite.ptn());
+			// System.out.printf("White Move: %s%n", mWhite.ptn());
 			b = BoardMoveImpl.makeMove(b, mWhite);
-			//System.out.println(calculateFeatureScores(b, Color.WHITE, turn));
+			// System.out.println(calculateFeatureScores(b, Color.WHITE, turn));
 
 			Move mBlack = simMove(b, blackMove).get();
-			System.out.printf("Black Move: %s%n", mBlack.ptn());
+			// System.out.printf("Black Move: %s%n", mBlack.ptn());
 			b = BoardMoveImpl.makeMove(b, mBlack);
-			//System.out.println(calculateFeatureScores(b, Color.BLACK, turn));
+			// System.out.println(calculateFeatureScores(b, Color.BLACK, turn));
 
 		}
 	}
@@ -75,8 +83,8 @@ public class TPNInput {
 		out.append(turn + " ");
 		// the features we measure
 		Map<Integer, BiFunction<Board, Color, Double>> h = Heuristics.getFeatureMap();
-		
-		int[] featuresWeWant = new int[] {0, 1, 2, 3, 4, 5, 6, 7, 8};
+
+		int[] featuresWeWant = new int[] { 0, 1, 2, 3, 4, 5, 6, 7, 8 };
 		for (int i : featuresWeWant) {
 			double f = h.get(i).apply(b, col);
 			out.append(f + " ");
