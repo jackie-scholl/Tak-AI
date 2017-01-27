@@ -43,6 +43,9 @@ public class TPNInput {
 			// process out lines and stuff
 
 			if (line.contains("Result")) {
+				if (!line.contains("0") || line.contains("1")) {
+					return lines;
+				}
 				String res = line.substring(line.indexOf("\"") + 1, line.indexOf("\"") + 4);
 				if (res.indexOf("0") == 0) {
 					winner = Color.BLACK;
@@ -91,14 +94,16 @@ public class TPNInput {
 			Move mWhite = simMove(b, whiteMove).get();
 			// System.out.printf("White Move: %s%n", mWhite.ptn());
 			b = BoardMoveImpl.makeMove(b, mWhite);
-			//System.out.println(whiteWin + calculateFeatureScores(b, Color.WHITE, turn));
+			// System.out.println(whiteWin + calculateFeatureScores(b,
+			// Color.WHITE, turn));
 			out.add(whiteWin + calculateFeatureScores(b, Color.WHITE, turn));
 
 			if (blackMove.length() > 1) {
 				Move mBlack = simMove(b, blackMove).get();
 				// System.out.printf("Black Move: %s%n", mBlack.ptn());
 				b = BoardMoveImpl.makeMove(b, mBlack);
-				//System.out.println(blackWin + calculateFeatureScores(b, Color.BLACK, turn));
+				// System.out.println(blackWin + calculateFeatureScores(b,
+				// Color.BLACK, turn));
 				out.add(blackWin + calculateFeatureScores(b, Color.BLACK, turn));
 			}
 		}
