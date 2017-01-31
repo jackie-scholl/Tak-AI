@@ -156,6 +156,10 @@ public class TPNInput {
 
 		dbString = dbString.replace(" ", "");
 		String[] moves = dbString.split(",");
+		
+		if (moves.length == 1) {
+			return Collections.emptyList();
+		}
 
 		for (String move : moves) {
 			String ptnMove = "";
