@@ -208,17 +208,32 @@ public class Heuristics {
 	public static double heuristic6(Board b, Color col) {
 		Map<Integer, Double> coefficients = new HashMap<>();
 		// faked feature #-1 just returns 1 every time
-		coefficients.put(-1, -0.1101628);
-		coefficients.put(0, -0.0011995);
-		coefficients.put(1,  0.1911019);
-		coefficients.put(2, -0.0303396);
-		coefficients.put(3,  0.0460357);
-		coefficients.put(4, -0.0205508);
-		coefficients.put(5,  0.0023800);
-		coefficients.put(6, -0.1133801);
-		coefficients.put(7,  0.0157600);
-		coefficients.put(8,  0.0);
-		//coefficients.put(9,  0.037850);
+		coefficients.put(-1, -0.1209699);
+		coefficients.put(0,  0.1914487);
+		coefficients.put(1, -0.0304879);
+		coefficients.put(2,  0.0459075);
+		coefficients.put(3, -0.0206859);
+		coefficients.put(4,  0.0023551);
+		coefficients.put(5, -0.1140156);
+		coefficients.put(6,  0.0155949);
+		coefficients.put(7,  0.0);
+		coefficients.put(8,  0.0378559);
+		
+/*
+ * Coefficients: (1 not defined because of singularities)
+              Estimate Std. Error t value Pr(>|t|)    
+(Intercept) -0.1209699  0.0017685 -68.404  < 2e-16 ***
+V3           0.1914487  0.0015499 123.527  < 2e-16 ***
+V4          -0.0304879  0.0010779 -28.285  < 2e-16 ***
+V5           0.0459075  0.0016478  27.859  < 2e-16 ***
+V6          -0.0206859  0.0017997 -11.494  < 2e-16 ***
+V7           0.0023551  0.0001084  21.721  < 2e-16 ***
+V8          -0.1140156  0.0041116 -27.731  < 2e-16 ***
+V9           0.0155949  0.0031462   4.957 7.17e-07 ***
+V10                 NA         NA      NA       NA    
+V11          0.0378559  0.0018343  20.638  < 2e-16 ***
+
+ */
 		
 		double result = coefficients.entrySet()
 			.stream()
@@ -234,37 +249,38 @@ public class Heuristics {
 	/*
 	 * Regression based on all games in the database. ~3,300,000 rows, 10 features.
 	 * Ignoring 204 games that are seen as containing illegal moves.
-	 * Consistently loses to H3, even when white. All coefficients statistically significant, except #7: featureCapstoneControlOther
+	 * Consistently wins against H3, even when black. All coefficients statistically significant, except #6: featureCapstoneControlSame
 	 */
 	public static double heuristic7(Board b, Color col) {
 		Map<Integer, Double> coefficients = new HashMap<>();
 		// faked feature #-1 just returns 1 every time
-		coefficients.put(-1, -1.030e-01);
-		coefficients.put(0,  2.375e-04);
-		coefficients.put(1,  1.659e-01);
-		coefficients.put(2, -5.186e-02);
-		coefficients.put(3,  5.818e-03);
-		coefficients.put(4,  5.873e-03);
-		coefficients.put(5,  1.077e-03);
-		coefficients.put(6, -1.769e-01);
-		coefficients.put(7,  9.425e-05);
-		coefficients.put(8,  0.0);
+		coefficients.put(-1, -1.006e-01);
+		coefficients.put(0,  1.658e-01);
+		coefficients.put(1, -5.184e-02);
+		coefficients.put(2,  5.849e-03);
+		coefficients.put(3,  5.886e-03);
+		coefficients.put(4,  1.081e-03);
+		coefficients.put(5, -1.768e-01);
+		coefficients.put(6,  1.143e-04);
+		coefficients.put(7,  0.0);
+		coefficients.put(8,  6.974e-03);
 		//coefficients.put(9,  6.981e-03);
 		
 /*
  * Coefficients: (1 not defined because of singularities)
               Estimate Std. Error  t value Pr(>|t|)    
-(Intercept) -1.030e-01  8.660e-04 -118.933  < 2e-16 ***
-V2           2.375e-04  6.621e-05    3.587 0.000334 ***
-V3           1.659e-01  4.408e-04  376.257  < 2e-16 ***
-V4          -5.186e-02  2.845e-04 -182.316  < 2e-16 ***
-V5           5.818e-03  4.950e-04   11.753  < 2e-16 ***
-V6           5.873e-03  5.325e-04   11.031  < 2e-16 ***
-V7           1.077e-03  2.461e-05   43.742  < 2e-16 ***
-V8          -1.769e-01  1.223e-03 -144.645  < 2e-16 ***
-V9           9.425e-05  9.426e-04    0.100 0.920353    
+(Intercept) -1.006e-01  5.381e-04 -186.865   <2e-16 ***
+V3           1.658e-01  4.406e-04  376.317   <2e-16 ***
+V4          -5.184e-02  2.844e-04 -182.281   <2e-16 ***
+V5           5.849e-03  4.949e-04   11.818   <2e-16 ***
+V6           5.886e-03  5.325e-04   11.054   <2e-16 ***
+V7           1.081e-03  2.458e-05   43.960   <2e-16 ***
+V8          -1.768e-01  1.223e-03 -144.604   <2e-16 ***
+V9           1.143e-04  9.426e-04    0.121    0.903    
 V10                 NA         NA       NA       NA    
-V11          6.981e-03  5.494e-04   12.706  < 2e-16 ***
+V11          6.974e-03  5.494e-04   12.694   <2e-16 ***
+---
+ ***
 
  */
 		
