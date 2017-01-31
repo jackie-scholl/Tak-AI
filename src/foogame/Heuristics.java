@@ -17,6 +17,8 @@ public class Heuristics {
 		HEURISTIC_MAP.put(3, Heuristics::heuristic3);
 		HEURISTIC_MAP.put(4, Heuristics::heuristic4);
 		HEURISTIC_MAP.put(5, Heuristics::heuristic5);
+		HEURISTIC_MAP.put(6, Heuristics::heuristic6);
+		HEURISTIC_MAP.put(7, Heuristics::heuristic7);
 		// System.out.println("setting heuristic map");
 		// System.out.println(HEURISTIC_MAP);
 	}
@@ -179,6 +181,9 @@ public class Heuristics {
 		return (a1 / 200) + (a2 / -400) + (a3 / 300) + (a4 / -400) + ( a5 / 400) + (a6 / 400) + (a7 / -400);
 	}
 	
+	/*
+	 * Regression based on like 15 games. Very bad.
+	 */
 	public static double heuristic4(Board b, Color col) {
 		double a0 =  0.117600;
 		double a1 =  0.003166 * featureNumStonesOnBoard(b, col);
@@ -189,5 +194,87 @@ public class Heuristics {
 	
 	public static double heuristic5(Board b, Color col) {
 		return 0;
+	}
+	
+	/*
+	 * Problem: score always shows as 0.
+	 */
+	
+	/*
+	 * Regression based on all games with TakticianBot as either white or black. ~300,000 rows, 10 features
+	 * Consistently loses to H3, even when white. Ignores a few games that it sees as containing illegal moves.
+	 * All feature values shown as statistically significant.
+	 */
+	public static double heuristic6(Board b, Color col) {
+		Map<Integer, Double> coefficients = new HashMap<>();
+		// faked feature #-1 just returns 1 every time
+		coefficients.put(-1, -0.1101628);
+		coefficients.put(0, -0.0011995);
+		coefficients.put(1,  0.1911019);
+		coefficients.put(2, -0.0303396);
+		coefficients.put(3,  0.0460357);
+		coefficients.put(4, -0.0205508);
+		coefficients.put(5,  0.0023800);
+		coefficients.put(6, -0.1133801);
+		coefficients.put(7,  0.0157600);
+		coefficients.put(8,  0.0);
+		//coefficients.put(9,  0.037850);
+		
+		double result = coefficients.entrySet()
+			.stream()
+			.map(e -> 
+				(e.getKey() == -1 ? 1 : FEATURE_MAP.get(e.getKey()).apply(b, col) ) * e.getValue())
+			.reduce((x, y) -> x + y).get();
+		
+		//System.out.println(result);
+		
+		return result / 100;
+	}
+	
+	/*
+	 * Regression based on all games in the database. ~3,300,000 rows, 10 features.
+	 * Ignoring 204 games that are seen as containing illegal moves.
+	 * Consistently loses to H3, even when white. All coefficients statistically significant, except #7: featureCapstoneControlOther
+	 */
+	public static double heuristic7(Board b, Color col) {
+		Map<Integer, Double> coefficients = new HashMap<>();
+		// faked feature #-1 just returns 1 every time
+		coefficients.put(-1, -1.030e-01);
+		coefficients.put(0,  2.375e-04);
+		coefficients.put(1,  1.659e-01);
+		coefficients.put(2, -5.186e-02);
+		coefficients.put(3,  5.818e-03);
+		coefficients.put(4,  5.873e-03);
+		coefficients.put(5,  1.077e-03);
+		coefficients.put(6, -1.769e-01);
+		coefficients.put(7,  9.425e-05);
+		coefficients.put(8,  0.0);
+		//coefficients.put(9,  6.981e-03);
+		
+/*
+ * Coefficients: (1 not defined because of singularities)
+              Estimate Std. Error  t value Pr(>|t|)    
+(Intercept) -1.030e-01  8.660e-04 -118.933  < 2e-16 ***
+V2           2.375e-04  6.621e-05    3.587 0.000334 ***
+V3           1.659e-01  4.408e-04  376.257  < 2e-16 ***
+V4          -5.186e-02  2.845e-04 -182.316  < 2e-16 ***
+V5           5.818e-03  4.950e-04   11.753  < 2e-16 ***
+V6           5.873e-03  5.325e-04   11.031  < 2e-16 ***
+V7           1.077e-03  2.461e-05   43.742  < 2e-16 ***
+V8          -1.769e-01  1.223e-03 -144.645  < 2e-16 ***
+V9           9.425e-05  9.426e-04    0.100 0.920353    
+V10                 NA         NA       NA       NA    
+V11          6.981e-03  5.494e-04   12.706  < 2e-16 ***
+
+ */
+		
+		double result = coefficients.entrySet()
+			.stream()
+			.map(e -> 
+				(e.getKey() == -1 ? 1 : FEATURE_MAP.get(e.getKey()).apply(b, col) ) * e.getValue())
+			.reduce((x, y) -> x + y).get();
+		
+		return result / 100;
+		
 	}
 }
