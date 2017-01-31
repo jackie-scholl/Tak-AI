@@ -16,8 +16,7 @@ import java.util.stream.Collectors;
 public class TPNInput {
 
 	public static void main(String args[]) throws IOException {
-		translateDBtoPTN(
-				"P A1,P D4,P D3,P B1,M D3 D4 1,P A2,P D3,M B1 A1 1,P E4,M A1 B1 1,M D4 B4 1 1");
+		translateDBtoPTN("P A1,P D4,P D3,P B1,M D3 D4 1,P A2,P D3,M B1 A1 1,P E4,M A1 B1 1,M D4 B4 1 1", "R-0");
 		List<File> filesToProcess = Arrays.stream(args).map(Paths::get).filter(Files::isRegularFile).map(Path::toFile)
 				.collect(Collectors.toList());
 		// List<File> filesInFolder =
@@ -127,10 +126,13 @@ public class TPNInput {
 		return out.toString();
 	}
 
-	public static String translateDBtoPTN(String dbString) {
-		String ptn = "";
+	public static List<String> translateDBtoPTN(String dbString, String result) {
+		List<String> lines = new ArrayList<String>();
+		lines.add(String.format("[Result \"%s\"]", result));
+
 		dbString = dbString.replace(" ", "");
 		String[] moves = dbString.split(",");
+
 		for (String move : moves) {
 			String ptnMove = "";
 			if (move.charAt(0) == 'P') {
@@ -145,6 +147,7 @@ public class TPNInput {
 						ptnMove += "S" + move.substring(1, 3);
 					}
 				}
+				lines.add(ptnMove);
 			} else {
 				// move
 				String initial = move.substring(1, 3);
@@ -162,13 +165,15 @@ public class TPNInput {
 				for (char c : drops.toCharArray()) {
 					dropSum += Character.getNumericValue(c);
 				}
-				System.out.println(initial);
-				ptnMove += dropSum + initial + ptnDir + drops;
+				lines.add(dropSum + initial + ptnDir + drops);
 
 			}
-			System.out.println("dbString: " + move + " ,ptn: " + ptnMove);
+			// System.out.println("dbString: " + move + " ,ptn: " + ptnMove);
 		}
-		return ptn;
+		for (String line : lines) {
+			System.out.println(line);
+		}
+		return lines;
 	}
 
 	public static Optional<Move> simMove(Board board, String moveTPN) {
