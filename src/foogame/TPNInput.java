@@ -16,6 +16,8 @@ import java.util.stream.Collectors;
 public class TPNInput {
 
 	public static void main(String args[]) throws IOException {
+		translateDBtoPTN(
+				"P A1,P D4,P D3,P B1,M D3 D4 1,P A2,P D3,M B1 A1 1,P E4,M A1 B1 1,M D4 B4 1 1");
 		List<File> filesToProcess = Arrays.stream(args).map(Paths::get).filter(Files::isRegularFile).map(Path::toFile)
 				.collect(Collectors.toList());
 		// List<File> filesInFolder =
@@ -123,6 +125,50 @@ public class TPNInput {
 		}
 
 		return out.toString();
+	}
+
+	public static String translateDBtoPTN(String dbString) {
+		String ptn = "";
+		dbString = dbString.replace(" ", "");
+		String[] moves = dbString.split(",");
+		for (String move : moves) {
+			String ptnMove = "";
+			if (move.charAt(0) == 'P') {
+				if (move.length() == 3) {
+					// place a flat
+					ptnMove += "F" + move.substring(1);
+				} else {
+					// place a wall or capstone
+					if (move.charAt(3) == 'C') {
+						ptnMove += "C" + move.substring(1, 3);
+					} else {
+						ptnMove += "S" + move.substring(1, 3);
+					}
+				}
+			} else {
+				// move
+				String initial = move.substring(1, 3);
+				String target = move.substring(3, 5);
+				char ptnDir;
+				if (initial.charAt(0) == target.charAt(0)) {
+					// same column
+					ptnDir = (initial.charAt(1) < target.charAt(1)) ? '+' : '-';
+				} else {
+					// same rank
+					ptnDir = (initial.charAt(0) < target.charAt(0)) ? '>' : '<';
+				}
+				String drops = move.substring(5);
+				int dropSum = 0;
+				for (char c : drops.toCharArray()) {
+					dropSum += Character.getNumericValue(c);
+				}
+				System.out.println(initial);
+				ptnMove += dropSum + initial + ptnDir + drops;
+
+			}
+			System.out.println("dbString: " + move + " ,ptn: " + ptnMove);
+		}
+		return ptn;
 	}
 
 	public static Optional<Move> simMove(Board board, String moveTPN) {
