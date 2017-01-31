@@ -49,6 +49,10 @@ public class BoardMoveImpl {
 
 		for (int i = m.dropCounts.length - 1; i >= 0; i--) {
 			int grabThisTime = m.dropCounts[i];
+			if (grabThisTime > s.length()) {
+				//System.out.println("You can't grab more stones than are in the stack");
+				return false;
+			}
 			Stack[] stacks = s.split(grabThisTime);
 			Stack miniStack = stacks[1]; // aka grabStack
 			s = stacks[0];
