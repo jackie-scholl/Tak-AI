@@ -63,10 +63,10 @@ public class Minimaxer implements Player {
 		if (!GameInstance.SILENT) {
 			//System.out.println(score);
 			if (score < -0.5) {
-				System.out.println("Oh no! They have tinue!");
+				//System.out.println("Oh no! They have tinue!");
 				//PTNLogger.ptnComment("Oh no! They have tinue!");
 			} else if (score > 0.5) {
-				System.out.println("Yay! We have tinue!");
+				//System.out.println("Yay! We have tinue!");
 			}
 			long end = System.currentTimeMillis();
 			double difference = (end-start)/1000.0;

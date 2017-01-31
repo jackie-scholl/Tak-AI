@@ -15,6 +15,8 @@ public class Heuristics {
 		HEURISTIC_MAP.put(1, Heuristics::heuristic1);
 		HEURISTIC_MAP.put(2, Heuristics::heuristic2);
 		HEURISTIC_MAP.put(3, Heuristics::heuristic3);
+		HEURISTIC_MAP.put(4, Heuristics::heuristic4);
+		HEURISTIC_MAP.put(5, Heuristics::heuristic5);
 		// System.out.println("setting heuristic map");
 		// System.out.println(HEURISTIC_MAP);
 	}
@@ -175,5 +177,17 @@ public class Heuristics {
 		double a6 = featureCapstoneControlSame(b, col);
 		double a7 = featureCapstoneControlOther(b, col);
 		return (a1 / 200) + (a2 / -400) + (a3 / 300) + (a4 / -400) + ( a5 / 400) + (a6 / 400) + (a7 / -400);
+	}
+	
+	public static double heuristic4(Board b, Color col) {
+		double a0 =  0.117600;
+		double a1 =  0.003166 * featureNumStonesOnBoard(b, col);
+		double a2 = -0.321358 * featureNumStones(b, col);
+		double a3 = -0.018144 * featureClustering(b, col);
+		return (a0 + a1 + a2 + a3)/10;
+	}
+	
+	public static double heuristic5(Board b, Color col) {
+		return 0;
 	}
 }
