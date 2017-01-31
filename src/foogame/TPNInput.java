@@ -16,13 +16,16 @@ import java.util.stream.Collectors;
 public class TPNInput {
 
 	public static void main(String args[]) throws IOException {
-		translateDBtoPTN("P A1,P D4,P D3,P B1,M D3 D4 1,P A2,P D3,M B1 A1 1,P E4,M A1 B1 1,M D4 B4 1 1", "R-0");
+		//translateDBtoPTN("P A1,P D4,P D3,P B1,M D3 D4 1,P A2,P D3,M B1 A1 1,P E4,M A1 B1 1,M D4 B4 1 1", "R-0");
+		
 		List<File> filesToProcess = Arrays.stream(args).map(Paths::get).filter(Files::isRegularFile).map(Path::toFile)
 				.collect(Collectors.toList());
-		// List<File> filesInFolder =
-		// Files.walk(Paths.get("D:\\Workspace\\Tak\\IncomingPTN")).filter(Files::isRegularFile)
-		// .map(Path::toFile).collect(Collectors.toList());
-		BufferedWriter bfOut = new BufferedWriter(new FileWriter("FeatureScoring.ssv"));
+		List<String> lines = filesToProcess.stream().map(TPNInput::processFile).flatMap(List::stream)
+				.collect(Collectors.toList());
+		
+		writeOut(lines);
+		
+		/*BufferedWriter bfOut = new BufferedWriter(new FileWriter("FeatureScoring.ssv"));
 		for (File f : filesToProcess) {
 			System.out.println(f.toString());
 			List<String> lines = processFile(f);
@@ -32,15 +35,37 @@ public class TPNInput {
 			}
 		}
 		bfOut.flush();
-		bfOut.close();
+		bfOut.close();*/
 	}
 
-	private static List<String> processFile(File f) throws IOException {
-		BufferedReader in = new BufferedReader(new FileReader(f));
+	public static int writeOut(List<String> lines) throws IOException {
+		BufferedWriter bfOut = new BufferedWriter(new FileWriter("FeatureScoring.ssv"));
+		for (String line : lines) {
+			bfOut.append(line);
+			bfOut.newLine();
+		}
+		bfOut.flush();
+		bfOut.close();
+		
+		return lines.size();
+	}
+
+	public static List<String> processFile(File f) {
+		try {
+			BufferedReader in = new BufferedReader(new FileReader(f));
+			List<String> lines = in.lines().collect(Collectors.toList());
+			in.close();
+			return processPTN(lines);
+		} catch (IOException e) {
+			e.printStackTrace();
+			return Collections.emptyList();
+		}
+	}
+
+	public static List<String> processPTN(Iterable<String> in) {
 		List<String> lines = new ArrayList<String>();
-		String line = in.readLine();
 		Color winner = Color.WHITE;
-		while (line != null) {
+		for (String line : in) {
 			// process out lines and stuff
 
 			if (line.contains("Result")) {
@@ -55,9 +80,8 @@ public class TPNInput {
 			if (line.length() != 0 && line.charAt(0) != '[' && line.charAt(0) != ' ') {
 				lines.add(line);
 			}
-			line = in.readLine();
 		}
-		in.close();
+
 		return doMovesAndThings(lines, winner);
 
 	}
@@ -71,7 +95,7 @@ public class TPNInput {
 			// removes the "1. " part of the move line
 			String turnNumString = lineFull.substring(0, lineFull.indexOf(" "));
 			String line = lineFull.substring(lineFull.indexOf(" ") + 1);
-			// System.out.println(line);
+			//System.out.println(line);
 			String whiteMove;
 			if (line.indexOf(" ") == -1 && line.length() > 0) {
 				whiteMove = line;
@@ -138,13 +162,13 @@ public class TPNInput {
 			if (move.charAt(0) == 'P') {
 				if (move.length() == 3) {
 					// place a flat
-					ptnMove += "F" + move.substring(1);
+					ptnMove += "F" + move.substring(1).toLowerCase();
 				} else {
 					// place a wall or capstone
 					if (move.charAt(3) == 'C') {
-						ptnMove += "C" + move.substring(1, 3);
+						ptnMove += "C" + move.substring(1, 3).toLowerCase();
 					} else {
-						ptnMove += "S" + move.substring(1, 3);
+						ptnMove += "S" + move.substring(1, 3).toLowerCase();
 					}
 				}
 				lines.add(ptnMove);
@@ -165,15 +189,29 @@ public class TPNInput {
 				for (char c : drops.toCharArray()) {
 					dropSum += Character.getNumericValue(c);
 				}
-				lines.add(dropSum + initial + ptnDir + drops);
+				lines.add(dropSum + initial.toLowerCase() + ptnDir + drops);
 
 			}
 			// System.out.println("dbString: " + move + " ,ptn: " + ptnMove);
 		}
-		for (String line : lines) {
+		/*for (String line : lines) {
 			System.out.println(line);
+		}*/
+		List<String> lines2 = new ArrayList<>();
+		for (int i=0; i<lines.size(); i++) {
+			String line = lines.get(i);
+			if (i == 0) {
+				lines2.add(line);
+			} else if (i % 2 == 1) {
+				lines2.add(String.format("%d. %s", (i+1)/2, line));
+			} else {
+				String old = lines2.get(lines2.size()-1);
+				String addition = String.format(" %s", line);
+				String newString = old + addition;
+				lines2.set(lines2.size()-1, newString);
+			}
 		}
-		return lines;
+		return lines2;
 	}
 
 	public static Optional<Move> simMove(Board board, String moveTPN) {
@@ -184,6 +222,7 @@ public class TPNInput {
 		if (!board.isLegalMove(m.get())) {
 			System.err.printf("Illegal move: %s%n", moveTPN);
 			System.err.printf("Does the system see this as a legal move: %b%n", board.isLegalMove(m.get()));
+			//System.err.printf("Board state: %s%n", GameLogger.stringifyBoard(board));
 			return Optional.empty();
 		}
 		return m;
