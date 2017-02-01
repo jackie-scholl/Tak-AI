@@ -202,7 +202,7 @@ public class Heuristics {
 	
 	/*
 	 * Regression based on all games with TakticianBot as either white or black. ~300,000 rows, 10 features
-	 * Consistently loses to H3, even when white. Ignores a few games that it sees as containing illegal moves.
+	 * Consistently wins to H3, even when black. Ignores 6 games that it sees as containing illegal moves.
 	 * All feature values shown as statistically significant.
 	 */
 	public static double heuristic6(Board b, Color col) {
@@ -261,8 +261,8 @@ V11          0.0378559  0.0018343  20.638  < 2e-16 ***
 		coefficients.put(3,  5.886e-03);
 		coefficients.put(4,  1.081e-03);
 		coefficients.put(5, -1.768e-01);
-		coefficients.put(6,  1.143e-04);
-		coefficients.put(7,  0.0);
+		//coefficients.put(6,  1.143e-04);
+		//coefficients.put(7,  0.0);
 		coefficients.put(8,  6.974e-03);
 		//coefficients.put(9,  6.981e-03);
 		
