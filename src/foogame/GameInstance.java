@@ -11,7 +11,7 @@ public class GameInstance {
 	private final EnumMap<Color, Player> players;
 	private final Set<GameObserver> observers;
 	private Board board;
-	public final static boolean SILENT = true;
+	public final static boolean SILENT = false;
 	public final static boolean SHOUTY = false;
 	
 	public GameInstance(Player redPlayer, Player bluePlayer) {
@@ -51,7 +51,7 @@ public class GameInstance {
 		this.board = b;
 	}
 	
-	public Optional<Color> runSingle() {
+	public Optional<Color> runSingle() throws IOException {
 		Move m = players.get(board.whoseTurn).getMove(board);
 		//Board next = board.makeMove(m);
 		Board next = BoardMoveImpl.makeMove(board, m);
@@ -70,7 +70,7 @@ public class GameInstance {
 		return result;
 	}
 	
-	public Color runFull() {
+	public Color runFull() throws IOException {
 		while (true) {
 			Optional<Color> optColor = runSingle();
 			if (optColor.isPresent()) {
