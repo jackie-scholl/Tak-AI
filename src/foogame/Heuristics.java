@@ -19,26 +19,27 @@ public class Heuristics {
 		HEURISTIC_MAP.put(5, Heuristics::heuristic5);
 		HEURISTIC_MAP.put(6, Heuristics::heuristic6);
 		HEURISTIC_MAP.put(7, Heuristics::heuristic7);
+		HEURISTIC_MAP.put(8, Heuristics::heuristic8);
 		// System.out.println("setting heuristic map");
 		// System.out.println(HEURISTIC_MAP);
 	}
-	
+
 	static {
-		FEATURE_MAP.put(0,  Heuristics::featureNumStonesOnBoard);
-		FEATURE_MAP.put(1,  Heuristics::featureNumStones);
-		FEATURE_MAP.put(2,  Heuristics::featureClustering);
-		FEATURE_MAP.put(3,  Heuristics::featureClustering2);
-		FEATURE_MAP.put(4,  Heuristics::featureStackiness);
-		FEATURE_MAP.put(5,  Heuristics::featureCapstoneUsThem);
-		FEATURE_MAP.put(6,  Heuristics::featureCapstoneControlSame);
-		FEATURE_MAP.put(7,  Heuristics::featureCapstoneControlOther);
-		FEATURE_MAP.put(8,  Heuristics::featureCapstoneHard);
+		FEATURE_MAP.put(0, Heuristics::featureNumStonesOnBoard);
+		FEATURE_MAP.put(1, Heuristics::featureNumStones);
+		FEATURE_MAP.put(2, Heuristics::featureClustering);
+		FEATURE_MAP.put(3, Heuristics::featureClustering2);
+		FEATURE_MAP.put(4, Heuristics::featureStackiness);
+		FEATURE_MAP.put(5, Heuristics::featureCapstoneUsThem);
+		FEATURE_MAP.put(6, Heuristics::featureCapstoneControlSame);
+		FEATURE_MAP.put(7, Heuristics::featureCapstoneControlOther);
+		FEATURE_MAP.put(8, Heuristics::featureCapstoneHard);
 	}
-	
+
 	private Heuristics() {
 		// prevent accidental instantiation
 	}
-	
+
 	public static Map<Integer, BiFunction<Board, Color, Double>> getFeatureMap() {
 		return FEATURE_MAP;
 	}
@@ -76,7 +77,7 @@ public class Heuristics {
 						.count())
 				.sum();
 	}
-	
+
 	private static double featureStackiness(Board b, Color col) {
 		return Position.positionStream(b.size)
 				.filter(p -> Minimaxer.isColor(b, p, col))
@@ -90,16 +91,17 @@ public class Heuristics {
 	private static double featureCapstoneUsThem(Board b, Color col) {
 		return b.getNumCapstones(col.other()) < 1 ? b.getNumCapstones(col) : 0;
 	}
-	
+
 	// how many of our pieces are under our capstone and reachable
 	private static double featureCapstoneControlSame(Board b, Color col) {
-		Optional<Position> pos = Position.positionStream(b.size).filter(p -> !b.getStack(p).isEmpty() && b.getStack(p).top().type == PieceType.CAPSTONE).findAny();
+		Optional<Position> pos = Position.positionStream(b.size)
+				.filter(p -> !b.getStack(p).isEmpty() && b.getStack(p).top().type == PieceType.CAPSTONE).findAny();
 		if (!pos.isPresent()) {
 			return 0;
 		}
 		Stone[] stones = b.getStack(pos.get()).getCopy();
 		if (stones.length > b.size) {
-			stones = Arrays.copyOfRange(stones, stones.length - b.size, stones.length-1);
+			stones = Arrays.copyOfRange(stones, stones.length - b.size, stones.length - 1);
 		}
 		if (stones.length == 1) {
 			return 0;
@@ -115,7 +117,8 @@ public class Heuristics {
 
 	// how many of their pieces are under our capstone and reachable
 	private static double featureCapstoneControlOther(Board b, Color col) {
-		Optional<Position> pos = Position.positionStream(b.size).filter(p -> !b.getStack(p).isEmpty() && b.getStack(p).top().type == PieceType.CAPSTONE).findAny();
+		Optional<Position> pos = Position.positionStream(b.size)
+				.filter(p -> !b.getStack(p).isEmpty() && b.getStack(p).top().type == PieceType.CAPSTONE).findAny();
 		if (!pos.isPresent()) {
 			return 0;
 		}
@@ -124,7 +127,7 @@ public class Heuristics {
 			return 0;
 		}
 		if (stones.length > b.size) {
-			stones = Arrays.copyOfRange(stones, stones.length - b.size, stones.length-1);
+			stones = Arrays.copyOfRange(stones, stones.length - b.size, stones.length - 1);
 		}
 		int c = 0;
 		for (int i = 0; i < stones.length - 2; i++) {
@@ -134,7 +137,7 @@ public class Heuristics {
 		}
 		return c;
 	}
-	
+
 	// returns 1 if capstone is hard, -1 if soft, else 0
 	private static double featureCapstoneHard(Board b, Color c) {
 		Optional<Position> pos = Position.positionStream(b.size)
@@ -151,7 +154,7 @@ public class Heuristics {
 		}
 		return 0;
 	}
-	
+
 	public static double heuristic0(Board b, Color col) {
 		double a1 = featureNumStonesOnBoard(b, col);
 		return a1 / 200;
@@ -169,7 +172,7 @@ public class Heuristics {
 		double a3 = featureClustering(b, col);
 		return a1 / 200 + a2 / -200 + a3 / 400;
 	}
-	
+
 	public static double heuristic3(Board b, Color col) {
 		double a1 = featureNumStonesOnBoard(b, col);
 		double a2 = featureNumStones(b, col);
@@ -178,28 +181,28 @@ public class Heuristics {
 		double a5 = featureCapstoneHard(b, col);
 		double a6 = featureCapstoneControlSame(b, col);
 		double a7 = featureCapstoneControlOther(b, col);
-		return (a1 / 200) + (a2 / -400) + (a3 / 300) + (a4 / -400) + ( a5 / 400) + (a6 / 400) + (a7 / -400);
+		return (a1 / 200) + (a2 / -400) + (a3 / 300) + (a4 / -400) + (a5 / 400) + (a6 / 400) + (a7 / -400);
 	}
-	
+
 	/*
 	 * Regression based on like 15 games. Very bad.
 	 */
 	public static double heuristic4(Board b, Color col) {
-		double a0 =  0.117600;
-		double a1 =  0.003166 * featureNumStonesOnBoard(b, col);
+		double a0 = 0.117600;
+		double a1 = 0.003166 * featureNumStonesOnBoard(b, col);
 		double a2 = -0.321358 * featureNumStones(b, col);
 		double a3 = -0.018144 * featureClustering(b, col);
-		return (a0 + a1 + a2 + a3)/10;
+		return (a0 + a1 + a2 + a3) / 10;
 	}
-	
+
 	public static double heuristic5(Board b, Color col) {
 		return 0;
 	}
-	
+
 	/*
 	 * Problem: score always shows as 0.
 	 */
-	
+
 	/*
 	 * Regression based on all games with TakticianBot as either white or black. ~300,000 rows, 10 features
 	 * Consistently wins to H3, even when black. Ignores 6 games that it sees as containing illegal moves.
@@ -209,43 +212,42 @@ public class Heuristics {
 		Map<Integer, Double> coefficients = new HashMap<>();
 		// faked feature #-1 just returns 1 every time
 		coefficients.put(-1, -0.1209699);
-		coefficients.put(0,  0.1914487);
+		coefficients.put(0, 0.1914487);
 		coefficients.put(1, -0.0304879);
-		coefficients.put(2,  0.0459075);
+		coefficients.put(2, 0.0459075);
 		coefficients.put(3, -0.0206859);
-		coefficients.put(4,  0.0023551);
+		coefficients.put(4, 0.0023551);
 		coefficients.put(5, -0.1140156);
-		coefficients.put(6,  0.0155949);
-		coefficients.put(7,  0.0);
-		coefficients.put(8,  0.0378559);
-		
-/*
- * Coefficients: (1 not defined because of singularities)
-              Estimate Std. Error t value Pr(>|t|)    
-(Intercept) -0.1209699  0.0017685 -68.404  < 2e-16 ***
-V3           0.1914487  0.0015499 123.527  < 2e-16 ***
-V4          -0.0304879  0.0010779 -28.285  < 2e-16 ***
-V5           0.0459075  0.0016478  27.859  < 2e-16 ***
-V6          -0.0206859  0.0017997 -11.494  < 2e-16 ***
-V7           0.0023551  0.0001084  21.721  < 2e-16 ***
-V8          -0.1140156  0.0041116 -27.731  < 2e-16 ***
-V9           0.0155949  0.0031462   4.957 7.17e-07 ***
-V10                 NA         NA      NA       NA    
-V11          0.0378559  0.0018343  20.638  < 2e-16 ***
+		coefficients.put(6, 0.0155949);
+		coefficients.put(7, 0.0);
+		coefficients.put(8, 0.0378559);
 
- */
+		/*
+		 * Coefficients: (1 not defined because of singularities)
+		      Estimate Std. Error t value Pr(>|t|)    
+		(Intercept) -0.1209699  0.0017685 -68.404  < 2e-16 ***
+		V3           0.1914487  0.0015499 123.527  < 2e-16 ***
+		V4          -0.0304879  0.0010779 -28.285  < 2e-16 ***
+		V5           0.0459075  0.0016478  27.859  < 2e-16 ***
+		V6          -0.0206859  0.0017997 -11.494  < 2e-16 ***
+		V7           0.0023551  0.0001084  21.721  < 2e-16 ***
+		V8          -0.1140156  0.0041116 -27.731  < 2e-16 ***
+		V9           0.0155949  0.0031462   4.957 7.17e-07 ***
+		V10                 NA         NA      NA       NA    
+		V11          0.0378559  0.0018343  20.638  < 2e-16 ***
 		
+		 */
+
 		double result = coefficients.entrySet()
-			.stream()
-			.map(e -> 
-				(e.getKey() == -1 ? 1 : FEATURE_MAP.get(e.getKey()).apply(b, col) ) * e.getValue())
-			.reduce((x, y) -> x + y).get();
-		
-		//System.out.println(result);
-		
+				.stream()
+				.map(e -> (e.getKey() == -1 ? 1 : FEATURE_MAP.get(e.getKey()).apply(b, col)) * e.getValue())
+				.reduce((x, y) -> x + y).get();
+
+		// System.out.println(result);
+
 		return result / 100;
 	}
-	
+
 	/*
 	 * Regression based on all games in the database. ~3,300,000 rows, 10 features.
 	 * Ignoring 204 games that are seen as containing illegal moves.
@@ -255,42 +257,80 @@ V11          0.0378559  0.0018343  20.638  < 2e-16 ***
 		Map<Integer, Double> coefficients = new HashMap<>();
 		// faked feature #-1 just returns 1 every time
 		coefficients.put(-1, -1.006e-01);
-		coefficients.put(0,  1.658e-01);
+		coefficients.put(0, 1.658e-01);
 		coefficients.put(1, -5.184e-02);
-		coefficients.put(2,  5.849e-03);
-		coefficients.put(3,  5.886e-03);
-		coefficients.put(4,  1.081e-03);
+		coefficients.put(2, 5.849e-03);
+		coefficients.put(3, 5.886e-03);
+		coefficients.put(4, 1.081e-03);
 		coefficients.put(5, -1.768e-01);
-		//coefficients.put(6,  1.143e-04);
-		//coefficients.put(7,  0.0);
-		coefficients.put(8,  6.974e-03);
-		//coefficients.put(9,  6.981e-03);
+		coefficients.put(6, 1.143e-04);
+		// coefficients.put(7, 0.0);
+		coefficients.put(8, 6.974e-03);
+		
+		/*
+		 * Coefficients: (1 not defined because of singularities)
+		      Estimate Std. Error  t value Pr(>|t|)    
+		(Intercept) -1.006e-01  5.381e-04 -186.865   <2e-16 ***
+		V3           1.658e-01  4.406e-04  376.317   <2e-16 ***
+		V4          -5.184e-02  2.844e-04 -182.281   <2e-16 ***
+		V5           5.849e-03  4.949e-04   11.818   <2e-16 ***
+		V6           5.886e-03  5.325e-04   11.054   <2e-16 ***
+		V7           1.081e-03  2.458e-05   43.960   <2e-16 ***
+		V8          -1.768e-01  1.223e-03 -144.604   <2e-16 ***
+		V9           1.143e-04  9.426e-04    0.121    0.903    
+		V10                 NA         NA       NA       NA    
+		V11          6.974e-03  5.494e-04   12.694   <2e-16 ***
+		---
+		 ***
+		 */
+
+		double result = coefficients.entrySet()
+				.stream()
+				.map(e -> (e.getKey() == -1 ? 1 : FEATURE_MAP.get(e.getKey()).apply(b, col)) * e.getValue())
+				.reduce((x, y) -> x + y).get();
+
+		return result / 100;
+
+	}
+
+	/*
+	/*
+		 * Regression based on all games in the database. ~3,300,000 rows, 10 features.
+		 * Ignoring 204 games that are seen as containing illegal moves.
+		 * Consistently wins against H3, even when black. All coefficients statistically significant, except #6: featureCapstoneControlSame
+		 */
+	public static double heuristic8(Board b, Color col) {
+		Map<Integer, Double> coefficients = new HashMap<>();
+		// faked feature #-1 just returns 1 every time
+		coefficients.put(-1, -0.09830311);
+		coefficients.put(0,  0.1894554);
+		coefficients.put(1, -0.0480462);
+		//coefficients.put(2, 5.849e-03);
+		//coefficients.put(3, 5.886e-03);
+		//coefficients.put(4, 1.081e-03);
+		//coefficients.put(5, -1.768e-01);
+		coefficients.put(6, -0.2055230);
+		//coefficients.put(7, 0.0);
+		coefficients.put(8,  0.0109975);
 		
 /*
- * Coefficients: (1 not defined because of singularities)
-              Estimate Std. Error  t value Pr(>|t|)    
-(Intercept) -1.006e-01  5.381e-04 -186.865   <2e-16 ***
-V3           1.658e-01  4.406e-04  376.317   <2e-16 ***
-V4          -5.184e-02  2.844e-04 -182.281   <2e-16 ***
-V5           5.849e-03  4.949e-04   11.818   <2e-16 ***
-V6           5.886e-03  5.325e-04   11.054   <2e-16 ***
-V7           1.081e-03  2.458e-05   43.960   <2e-16 ***
-V8          -1.768e-01  1.223e-03 -144.604   <2e-16 ***
-V9           1.143e-04  9.426e-04    0.121    0.903    
-V10                 NA         NA       NA       NA    
-V11          6.974e-03  5.494e-04   12.694   <2e-16 ***
+ * Coefficients:
+              Estimate Std. Error t value Pr(>|t|)    
+(Intercept) -0.0983031  0.0005345 -183.92   <2e-16 ***
+V3           0.1894554  0.0003131  605.13   <2e-16 ***
+V4          -0.0480462  0.0002522 -190.53   <2e-16 ***
+V8          -0.2055230  0.0011546 -178.01   <2e-16 ***
+V11          0.0109975  0.0005277   20.84   <2e-16 ***
 ---
- ***
-
+Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
  */
 		
 		double result = coefficients.entrySet()
-			.stream()
-			.map(e -> 
-				(e.getKey() == -1 ? 1 : FEATURE_MAP.get(e.getKey()).apply(b, col) ) * e.getValue())
-			.reduce((x, y) -> x + y).get();
-		
+				.stream()
+				.map(e -> (e.getKey() == -1 ? 1 : FEATURE_MAP.get(e.getKey()).apply(b, col)) * e.getValue())
+				.reduce((x, y) -> x + y).get();
+
 		return result / 100;
-		
+
 	}
 }
