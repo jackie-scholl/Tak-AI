@@ -17,3 +17,4 @@ src/foogame/Artificial$Artifical2.class
 *.ptn
 game.out.ptn
 target/*
+FeatureScoring.ssv
