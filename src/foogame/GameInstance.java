@@ -1,6 +1,7 @@
 package foogame;
 
 import java.io.IOException;
+import java.io.PrintStream;
 import java.io.PrintWriter;
 import java.util.*;
 import java.util.function.BiFunction;
@@ -13,6 +14,7 @@ public class GameInstance {
 	private Board board;
 	public final static boolean SILENT = false;
 	public final static boolean SHOUTY = false;
+	public final static boolean INFINITE = false;
 	
 	public GameInstance(Player redPlayer, Player bluePlayer) {
 		this(getEnumMap(redPlayer, bluePlayer));
@@ -88,16 +90,42 @@ public class GameInstance {
 	}
 	
 	public static void main(String... args) throws IOException {
-		long start = System.nanoTime();
 		Player player1 = parsePlayer(args[0]);
 		Player player2 = parsePlayer(args[1]);
-		GameInstance game = new GameInstance(player1, player2);
+		Optional<Board> startingBoard = Optional.empty();
+		if (args.length > 2) {
+			TPSInput tpsIn = new TPSInput(args[2]);
+			startingBoard = Optional.of(tpsIn.populateBoard());
+		}
+		if (INFINITE) {
+			System.setOut(new PrintStream("log.txt"));
+			while (true) {
+				runGame(player1, player2, startingBoard);
+			}
+		} else {
+			runGame(player1, player2, startingBoard);
+		}
+		
+		/*GameInstance game = new GameInstance(player1, player2);
 		game.registerObserver(new GameLogger("game.out.txt"));
 		if (args.length > 2) {
 			TPSInput tpsIn = new TPSInput(args[2]);
 			Board b = tpsIn.populateBoard();
 			game = new GameInstance(player1, player2, b);
 		}
+		if (!SILENT) {
+			game.registerObserver(new GameLogger(new PrintWriter(System.out)));
+		}
+		game.registerObserver(new PTNLogger("game.out.ptn"));
+		game.runFull();
+		long end = System.nanoTime();
+		System.out.printf("Time: %f seconds; # moves: %d; time/move: %.3f seconds%n", (end-start)/1.0e9, game.board.turnNumber, (end-start)/1.0e9/game.board.turnNumber);*/
+	}
+	
+	private static void runGame(Player player1, Player player2, Optional<Board> startingBoard, GameLogger... gameLoggers) throws IOException {
+		long start = System.nanoTime();
+		GameInstance game = startingBoard.isPresent() ? new GameInstance(player1, player2, startingBoard.get()) : new GameInstance(player1, player2);
+		game.registerObserver(new GameLogger("game.out.txt"));
 		if (!SILENT) {
 			game.registerObserver(new GameLogger(new PrintWriter(System.out)));
 		}

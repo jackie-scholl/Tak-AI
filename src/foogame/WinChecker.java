@@ -2,6 +2,8 @@ package foogame;
 
 import java.util.*;
 
+import com.google.common.collect.ImmutableSet;
+
 public class WinChecker {
 	public static Optional<Color> winCheck(Board b) {
 		return Optional.empty();
@@ -84,7 +86,7 @@ public class WinChecker {
 
 	private static boolean winCheck(Board board, Color c) {
 		for (int i=0; i<board.size; i++) {
-			if (winCheckHorizontal(board, c, new HashSet<>(), new Position(i, 0))) {
+			if (winCheckHorizontal2(board, c, new HashSet<>(), new Position(i, 0))) {
 				return true;
 			}
 		}
@@ -109,6 +111,26 @@ public class WinChecker {
 		}
 		Set<Position> newVisitedSet = new HashSet<>(visitedSet);
 		newVisitedSet.add(curPos);
+		return Arrays.stream(Direction.values())
+				.map(d -> curPos.move(d))
+				.anyMatch(p -> winCheckHorizontal(board, c, newVisitedSet, p));
+	}
+	
+	/* Right now, winCheckHorizontal takes slightly more time than WinCheckVertical (19.2% to 17.2%).
+	 * The hope is that with changes, it can take less time. If so, we must've made some great changes.
+	 * */
+	private static boolean winCheckHorizontal2(Board board, Color c, Set<Position> visitedSet, Position curPos) {
+		if (visitedSet.contains(curPos) || !board.inBounds(curPos) ||
+				!Optional.of(board.getBoardArray()[curPos.x][curPos.y]).filter(x -> !x.isEmpty()).map(Stack::top)
+				.filter(x -> x.color == c && x.type != PieceType.WALL).isPresent()) {
+			//System.out.printf("false for %s at (%d, %d)%n", c, curPos.x, curPos.y);
+			return false;
+		}
+		if (curPos.y == board.size-1) {
+			return true;
+		}
+		ImmutableSet<Position> newVisitedSet = ImmutableSet.<Position>builder().addAll(visitedSet).add(curPos).build();
+		//newVisitedSet.add(curPos);
 		return Arrays.stream(Direction.values())
 				.map(d -> curPos.move(d))
 				.anyMatch(p -> winCheckHorizontal(board, c, newVisitedSet, p));

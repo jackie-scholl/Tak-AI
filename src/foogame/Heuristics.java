@@ -20,6 +20,7 @@ public class Heuristics {
 		HEURISTIC_MAP.put(6, Heuristics::heuristic6);
 		HEURISTIC_MAP.put(7, Heuristics::heuristic7);
 		HEURISTIC_MAP.put(8, Heuristics::heuristic8);
+		HEURISTIC_MAP.put(9, Heuristics::heuristic8);
 		// System.out.println("setting heuristic map");
 		// System.out.println(HEURISTIC_MAP);
 	}
@@ -34,6 +35,7 @@ public class Heuristics {
 		FEATURE_MAP.put(6, Heuristics::featureCapstoneControlSame);
 		FEATURE_MAP.put(7, Heuristics::featureCapstoneControlOther);
 		FEATURE_MAP.put(8, Heuristics::featureCapstoneHard);
+		FEATURE_MAP.put(9, Heuristics::featureStackiness);
 	}
 
 	private Heuristics() {
@@ -86,6 +88,15 @@ public class Heuristics {
 				.map(x -> x * x)
 				.sum();
 	}
+	
+	private static double featureStackiness2(Board b, Color col) {
+		return Math.min(Position.positionStream(b.size)
+				.filter(p -> Minimaxer.isColor(b, p, col))
+				.map(b::getStack)
+				.mapToInt(Stack::length)
+				.map(x -> x * x)
+				.sum(), 5);
+	}
 
 	// how many capstones we have in our hand IF theyve played theirs
 	private static double featureCapstoneUsThem(Board b, Color col) {
@@ -99,7 +110,24 @@ public class Heuristics {
 		if (!pos.isPresent()) {
 			return 0;
 		}
-		Stone[] stones = b.getStack(pos.get()).getCopy();
+		
+		Stack stones = b.getStack(pos.get());
+		if (stones.length() == 1) {
+			return 0;
+		}
+		stones = stones.reachableStones(b.size);
+		/*if (stones.length > b.size) {
+			stones = Arrays.copyOfRange(stones, stones.length - b.size, stones.length - 1);
+		}*/
+		int c = 0;
+		for (int i = 0; i < stones.length() - 2; i++) {
+			if (stones.get(i).color == col) {
+				c++;
+			}
+		}
+		return c;
+		
+		/*Stone[] stones = b.getStack(pos.get()).getCopy();
 		if (stones.length > b.size) {
 			stones = Arrays.copyOfRange(stones, stones.length - b.size, stones.length - 1);
 		}
@@ -112,7 +140,7 @@ public class Heuristics {
 				c++;
 			}
 		}
-		return c;
+		return c;*/
 	}
 
 	// how many of their pieces are under our capstone and reachable
@@ -122,16 +150,18 @@ public class Heuristics {
 		if (!pos.isPresent()) {
 			return 0;
 		}
-		Stone[] stones = b.getStack(pos.get()).getCopy();
-		if (stones.length == 1) {
+		//Stone[] stones = b.getStack(pos.get()).getCopy();
+		Stack stones = b.getStack(pos.get());
+		if (stones.length() == 1) {
 			return 0;
 		}
-		if (stones.length > b.size) {
+		stones = stones.reachableStones(b.size);
+		/*if (stones.length > b.size) {
 			stones = Arrays.copyOfRange(stones, stones.length - b.size, stones.length - 1);
-		}
+		}*/
 		int c = 0;
-		for (int i = 0; i < stones.length - 2; i++) {
-			if (stones[i].color != col) {
+		for (int i = 0; i < stones.length() - 2; i++) {
+			if (stones.get(i).color != col) {
 				c++;
 			}
 		}
@@ -144,13 +174,20 @@ public class Heuristics {
 				.filter(p -> !b.getStack(p).isEmpty() && b.getStack(p).top().type == PieceType.CAPSTONE)
 				.findAny();
 		if (pos.isPresent()) {
-			Stone[] stones = b.getStack(pos.get()).getCopy();
+			Stack stones = b.getStack(pos.get());
+			if (stones.length() > 1) {
+				if (stones.get(stones.length() - 1).color == c) {
+					return 1;
+				}
+				return -1;
+			}
+			/*Stone[] stones = b.getStack(pos.get()).getCopy();
 			if (stones.length > 1) {
 				if (stones[stones.length - 1].color == c) {
 					return 1;
 				}
 				return -1;
-			}
+			}*/
 		}
 		return 0;
 	}
@@ -333,6 +370,52 @@ public class Heuristics {
 		V11          0.0109975  0.0005277   20.84   <2e-16 ***
 		---
 		Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
+		 */
+
+		double result = coefficients.entrySet()
+				.stream()
+				.map(e -> (e.getKey() == -1 ? 1 : FEATURE_MAP.get(e.getKey()).apply(b, col)) * e.getValue())
+				.reduce((x, y) -> x + y).get();
+
+		return result / 100;
+	}
+	
+	/*
+	 * H7 as White, H9 as black, with M2, 12 games: 7 / 5
+	 * H9 as White, H7 as black, with M2, 14 games: 7 / 7
+	 * 
+	 * It appears that H9 is pretty evenly matched with H7, and M2H9 v M2H9 games run nearly twice as fast
+	 * as M2H7 vs M2H7 games
+	 */
+	public static double heuristic9(Board b, Color col) {
+		Map<Integer, Double> coefficients = new HashMap<>();
+		// faked feature #-1 just returns 1 every time
+		coefficients.put(-1, -1.006e-01);
+		coefficients.put(0, 1.658e-01);
+		coefficients.put(1, -5.184e-02);
+		coefficients.put(2, 5.849e-03);
+		coefficients.put(3, 5.886e-03);
+		coefficients.put(9, 1.081e-03); // stackiness2
+		coefficients.put(5, -1.768e-01);
+		coefficients.put(6, 1.143e-04);
+		// coefficients.put(7, 0.0);
+		coefficients.put(8, 6.974e-03);
+
+		/*
+		 * Coefficients: (1 not defined because of singularities)
+		      Estimate Std. Error  t value Pr(>|t|)    
+		(Intercept) -1.006e-01  5.381e-04 -186.865   <2e-16 ***
+		V3           1.658e-01  4.406e-04  376.317   <2e-16 ***
+		V4          -5.184e-02  2.844e-04 -182.281   <2e-16 ***
+		V5           5.849e-03  4.949e-04   11.818   <2e-16 ***
+		V6           5.886e-03  5.325e-04   11.054   <2e-16 ***
+		V7           1.081e-03  2.458e-05   43.960   <2e-16 ***
+		V8          -1.768e-01  1.223e-03 -144.604   <2e-16 ***
+		V9           1.143e-04  9.426e-04    0.121    0.903    
+		V10                 NA         NA       NA       NA    
+		V11          6.974e-03  5.494e-04   12.694   <2e-16 ***
+		---
+		 ***
 		 */
 
 		double result = coefficients.entrySet()

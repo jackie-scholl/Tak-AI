@@ -22,6 +22,27 @@
           <target>1.8</target>
         </configuration>
       </plugin>
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>exec-maven-plugin</artifactId>
+        <version>1.5.0</version>
+        <executions>
+          <execution>
+            <goals>
+              <goal>java</goal>
+            </goals>
+          </execution>
+        </executions>
+        <configuration>
+          <mainClass>foogame.GameInstance</mainClass>
+          <!-- <executable>foogame.GameInstance</executable> -->
+          <!-- optional -->
+          <arguments>
+            <argument>M2H7</argument>
+            <argument>M2H7</argument>
+          </arguments>
+        </configuration>
+      </plugin>
     </plugins>
   </build>
   <dependencies>
