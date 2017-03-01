@@ -104,7 +104,7 @@ public class GameInstance {
 		game.registerObserver(new PTNLogger("game.out.ptn"));
 		game.runFull();
 		long end = System.nanoTime();
-		System.out.printf("Time: %f seconds; # moves: %d%n", (end-start)/1.0e9, game.board.turnNumber);
+		System.out.printf("Time: %f seconds; # moves: %d; time/move: %.3f seconds%n", (end-start)/1.0e9, game.board.turnNumber, (end-start)/1.0e9/game.board.turnNumber);
 	}
 	
 	private static Player parsePlayer(String s) {

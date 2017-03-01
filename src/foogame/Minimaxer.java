@@ -39,7 +39,7 @@ public class Minimaxer implements Player {
 				.collect(Collectors.toList());
 				//.max((x, y) -> Double.compare(x.score, y.score)).get();
 		
-		topBranchingFactors.add(moveScorePairs.size());
+		//topBranchingFactors.add(moveScorePairs.size());
 		
 		Collections.shuffle(moveScorePairs);
 		
@@ -152,7 +152,7 @@ public class Minimaxer implements Player {
 	private static List<Board> getBoards(Board node) {
 		List<Board> list = new ArrayList<>();
 		List<Move> moves = node.getLegalMoves().collect(Collectors.toList());
-		branchingFactors.add(moves.size());
+		//branchingFactors.add(moves.size());
 		for (Move m : moves) {
 			//Board b = node.makeMove(m);
 			Board b = BoardMoveImpl.makeMove(node, m);

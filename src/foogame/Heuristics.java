@@ -154,6 +154,15 @@ public class Heuristics {
 		}
 		return 0;
 	}
+	
+	private static double testing() {
+		int numStonesOnBoard = 0, numStones = 0, clustering = 0;
+		
+		return numStonesOnBoard /  200 +
+			   numStones        / -200 +
+			   clustering       /  400;
+		
+	}
 
 	public static double heuristic0(Board b, Color col) {
 		double a1 = featureNumStonesOnBoard(b, col);
@@ -205,7 +214,7 @@ public class Heuristics {
 
 	/*
 	 * Regression based on all games with TakticianBot as either white or black. ~300,000 rows, 10 features
-	 * Consistently wins to H3, even when black. Ignores 6 games that it sees as containing illegal moves.
+	 * Wins as black against H3 60% of the time (ply 2). Ignores 6 games that it sees as containing illegal moves.
 	 * All feature values shown as statistically significant.
 	 */
 	public static double heuristic6(Board b, Color col) {
@@ -251,7 +260,8 @@ public class Heuristics {
 	/*
 	 * Regression based on all games in the database. ~3,300,000 rows, 10 features.
 	 * Ignoring 204 games that are seen as containing illegal moves.
-	 * Consistently wins against H3, even when black. All coefficients statistically significant, except #6: featureCapstoneControlSame
+	 * Wins as black against H3 80% of the time (ply 2). All coefficients statistically significant,
+	 * except #6: featureCapstoneControlSame
 	 */
 	public static double heuristic7(Board b, Color col) {
 		Map<Integer, Double> coefficients = new HashMap<>();
@@ -266,7 +276,7 @@ public class Heuristics {
 		coefficients.put(6, 1.143e-04);
 		// coefficients.put(7, 0.0);
 		coefficients.put(8, 6.974e-03);
-		
+
 		/*
 		 * Coefficients: (1 not defined because of singularities)
 		      Estimate Std. Error  t value Pr(>|t|)    
@@ -294,37 +304,37 @@ public class Heuristics {
 	}
 
 	/*
-	/*
-		 * Regression based on all games in the database. ~3,300,000 rows, 10 features.
-		 * Ignoring 204 games that are seen as containing illegal moves.
-		 * Consistently wins against H3, even when black. All coefficients statistically significant, except #6: featureCapstoneControlSame
-		 */
+	 * Regression based on all games in the database. ~3,300,000 rows, 4 features.
+	 * Ignoring 204 games that are seen as containing illegal moves.
+	 * Wins as white 80% of the time against H3 (ply 2).
+	 * All coefficients statistically significant, except #6: featureCapstoneControlSame
+	 */
 	public static double heuristic8(Board b, Color col) {
 		Map<Integer, Double> coefficients = new HashMap<>();
 		// faked feature #-1 just returns 1 every time
 		coefficients.put(-1, -0.09830311);
-		coefficients.put(0,  0.1894554);
-		coefficients.put(1, -0.0480462);
-		//coefficients.put(2, 5.849e-03);
-		//coefficients.put(3, 5.886e-03);
-		//coefficients.put(4, 1.081e-03);
-		//coefficients.put(5, -1.768e-01);
-		coefficients.put(6, -0.2055230);
-		//coefficients.put(7, 0.0);
-		coefficients.put(8,  0.0109975);
-		
-/*
- * Coefficients:
-              Estimate Std. Error t value Pr(>|t|)    
-(Intercept) -0.0983031  0.0005345 -183.92   <2e-16 ***
-V3           0.1894554  0.0003131  605.13   <2e-16 ***
-V4          -0.0480462  0.0002522 -190.53   <2e-16 ***
-V8          -0.2055230  0.0011546 -178.01   <2e-16 ***
-V11          0.0109975  0.0005277   20.84   <2e-16 ***
----
-Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
- */
-		
+		coefficients.put(0, 0.1894554); // NumStonesOnBoard
+		coefficients.put(1, -0.0480462); // NumStones
+		// coefficients.put(2, 5.849e-03);
+		// coefficients.put(3, 5.886e-03);
+		// coefficients.put(4, 1.081e-03);
+		// coefficients.put(5, -1.768e-01);
+		coefficients.put(6, -0.2055230); // CapstoneControlSame
+		// coefficients.put(7, 0.0);
+		coefficients.put(8, 0.0109975); // CapstoneHard
+
+		/*
+		 * Coefficients:
+		      Estimate Std. Error t value Pr(>|t|)    
+		(Intercept) -0.0983031  0.0005345 -183.92   <2e-16 ***
+		V3           0.1894554  0.0003131  605.13   <2e-16 ***
+		V4          -0.0480462  0.0002522 -190.53   <2e-16 ***
+		V8          -0.2055230  0.0011546 -178.01   <2e-16 ***
+		V11          0.0109975  0.0005277   20.84   <2e-16 ***
+		---
+		Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
+		 */
+
 		double result = coefficients.entrySet()
 				.stream()
 				.map(e -> (e.getKey() == -1 ? 1 : FEATURE_MAP.get(e.getKey()).apply(b, col)) * e.getValue())
