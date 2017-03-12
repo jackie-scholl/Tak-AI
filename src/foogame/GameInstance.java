@@ -12,9 +12,9 @@ public class GameInstance {
 	private final EnumMap<Color, Player> players;
 	private final Set<GameObserver> observers;
 	private Board board;
-	public final static boolean SILENT = false;
+	public final static boolean SILENT = true;
 	public final static boolean SHOUTY = false;
-	public final static boolean INFINITE = false;
+	public final static boolean INFINITE = true;
 	
 	public GameInstance(Player redPlayer, Player bluePlayer) {
 		this(getEnumMap(redPlayer, bluePlayer));
@@ -99,7 +99,7 @@ public class GameInstance {
 		}
 		if (INFINITE) {
 			System.setOut(new PrintStream("log.txt"));
-			while (true) {
+			for (int i=0; i < 50; i++) {
 				runGame(player1, player2, startingBoard);
 			}
 		} else {
@@ -146,7 +146,7 @@ public class GameInstance {
 	}
 	
 	private static Player parseMinimaxPlayer(String s) {
-		Matcher m = Pattern.compile("M(\\d)(H(\\d)?)").matcher(s);
+		Matcher m = Pattern.compile("M(\\d)(H(\\d+)?)").matcher(s);
 		if (!m.matches()) {
 			throw new RuntimeException("Cannot parse minimax player: "+s);
 		}
