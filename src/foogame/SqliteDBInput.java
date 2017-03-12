@@ -13,7 +13,7 @@ public class SqliteDBInput {
 		Connection c = DriverManager.getConnection("jdbc:sqlite:/Users/jackie/Downloads/games_anon (1).db");
 		System.out.println("Opened database successfully");
 		
-		String sql = "SELECT * FROM 'games' WHERE /*(player_black IS 'TakticianBot' OR player_white IS 'TakticianBot') AND */size IS 5 /*LIMIT 0,10*/;";
+		String sql = "SELECT * FROM 'games' WHERE /*(player_black IS 'TakticianBot' OR player_white IS 'TakticianBot') AND*/ size IS 5 /*LIMIT 0,10*/;";
 
 		Statement stmt = c.createStatement();
 		ResultSet rs = stmt.executeQuery(sql);
