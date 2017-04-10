@@ -161,15 +161,24 @@ public class Heuristics {
 				}
 				return -1;
 			}
-			/*Stone[] stones = b.getStack(pos.get()).getCopy();
-			if (stones.length > 1) {
-				if (stones[stones.length - 1].color == c) {
-					return 1;
-				}
-				return -1;
-			}*/
 		}
 		return 0;
+	}
+	
+	// returns affinity to center of the board
+	private static double featureCenterAffinity(Board b, Color col)  {
+		double sum = 0;
+		int topCount = 0;
+		for (int i = 0; i < 5; i++){
+			for (int j = 0; i < 5; j++) {
+				Stack s = b.getBoardArray()[i][j];
+				if (s.top().color == col) {
+					sum += 5 - (Math.abs(3-(i+1)) + Math.abs(3-(j+1)));
+					topCount ++;
+				}
+			}
+		}
+		return sum/topCount;
 	}
 	
 	private static double testing() {
