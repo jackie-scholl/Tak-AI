@@ -38,6 +38,7 @@ public class Heuristics {
 		FEATURE_MAP.put(7, Heuristics::featureCapstoneControlOther);
 		FEATURE_MAP.put(8, Heuristics::featureCapstoneHard);
 		FEATURE_MAP.put(9, Heuristics::featureStackiness2);
+		FEATURE_MAP.put(10, Heuristics::featureCenterAffinity);
 	}
 
 	private Heuristics() {
@@ -165,7 +166,13 @@ public class Heuristics {
 		return 0;
 	}
 	
-	// returns affinity to center of the board
+	// returns average affinity to center of the board
+	// 1 2 3 2 1
+	// 2 3 4 3 2
+	// 3 4 5 4 3
+	// 2 3 4 3 2
+	// 1 2 3 2 1
+	// does not consider pieces not on top
 	private static double featureCenterAffinity(Board b, Color col)  {
 		double sum = 0;
 		int topCount = 0;
