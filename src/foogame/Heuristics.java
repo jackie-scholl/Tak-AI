@@ -92,6 +92,7 @@ public class Heuristics {
 				.sum();
 	}
 	
+	// should features like this be piece-count agnostic when we're trying a polynomial kernel?
 	private static double featureStackiness2(Board b, Color col) {
 		return Math.min(Position.positionStream(b.size)
 				.filter(p -> Minimaxer.isColor(b, p, col))
