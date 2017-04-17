@@ -173,6 +173,7 @@ public class Heuristics {
 	// 2 3 4 3 2
 	// 1 2 3 2 1
 	// does not consider pieces not on top
+	// should also try a ring like way of doing this
 	private static double featureCenterAffinity(Board b, Color col)  {
 		double sum = 0;
 		int topCount = 0;
