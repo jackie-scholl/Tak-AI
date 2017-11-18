@@ -59,18 +59,9 @@ public class GameLogger implements GameObserver {
 			b.append("|\n");
 		}
 		b.append("+----------+\n");
-		b.append(String.format("WHITE: %s%n", stringifyBoard2(board, Color.WHITE)));
-		b.append(String.format("BLACK: %s%n", stringifyBoard2(board, Color.BLACK)));
 		b.append(String.format("Num stones left: %s%n", board.getNumStones()));
 		b.append(String.format("Board spots: %s%n", board.numStonesOnBoard()));
 		return b.toString();
-	}
-	
-	public static String stringifyBoard2(Board board, Color c) {
-		StringBuilder b = new StringBuilder();
-		int size = board.size;
-		int mapThing = board.nonWallControlled.get(c);
-		return Integer.toBinaryString(mapThing);
 	}
 
 	public static String stringTPS(GameUpdate update)
@@ -84,8 +75,8 @@ public class GameLogger implements GameObserver {
 			for (int j = 0; j < size; j++) {
 				Stack stones = board.getBoardArray()[i][j];
 				if (!stones.isEmpty()) {
-					for (int r = 0; r < stones.length(); r++) {
-						Stone piece = stones.get(r);
+					for (int r = 0; r < stones.getCopy().length; r++) {
+						Stone piece = stones.getCopy()[r];
 						if (piece.color == Color.WHITE) {
 							tps.append("1");
 						} else {

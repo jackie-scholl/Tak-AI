@@ -1,7 +1,6 @@
 package foogame;
 
 import java.util.Optional;
-import java.util.Scanner;
 
 public class TUIPlayer implements Player {
 	public TUIPlayer() {}
@@ -26,16 +25,13 @@ public class TUIPlayer implements Player {
 	public Move getMove(Board board) {
 		long startTime = System.currentTimeMillis();
 		while (true) {
-			Scanner in = new Scanner(System.in);
-			System.out.printf("Make move (%s): %n", board.whoseTurn.name());
-			//String result = System.console().readLine("Make move (%s): ", board.whoseTurn.name());
-			String result = in.nextLine();
+			String result = System.console().readLine("Make move (%s): ", board.whoseTurn.name());
 			//Optional<Move> move = parseMove(board, result);
 			Optional<Move> move = parseMove2(board, result);
 			if (move.isPresent()) {
 				long endTime = System.currentTimeMillis();
 				double timeTaken = (endTime - startTime) / 1000.0;
-				System.out.printf("Cow took %.1f seconds%n", timeTaken);
+				System.out.printf("Human took %.1f seconds%n", timeTaken);
 				return move.get();
 			}
 		}

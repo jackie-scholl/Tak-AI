@@ -89,7 +89,7 @@ public class BoardMoveImpl {
 		}
 
 		if (t == PieceType.WALL) {
-			if (miniStack.top().type == PieceType.CAPSTONE) {
+			if (miniStack.getCopy()[0].type == PieceType.CAPSTONE) {
 				//System.out.println("can't move onto wall unless ur a capstone");
 				return true;
 			}

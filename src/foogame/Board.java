@@ -4,12 +4,9 @@ import java.util.*;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
 
-import com.google.common.collect.Maps;
-
 public class Board {
 	private final EnumMap<Color, Integer> numStones;
 	private final EnumMap<Color, Integer> numCapstones;
-	public final EnumMap<Color, Integer> nonWallControlled;
 	private final Stack[][] boardArray;
 	public final Color whoseTurn;
 	public final int size;
@@ -22,37 +19,6 @@ public class Board {
 		this.whoseTurn = whoseTurn;
 		this.size = boardArray.length;
 		this.turnNumber = turnNumber;
-		this.nonWallControlled = getNonWallControlled(boardArray);
-	}
-	
-	private static EnumMap<Color, Integer> getNonWallControlled(Stack[][] boardArray) {
-		EnumMap<Color, Integer> map = new EnumMap<Color, Integer>(Color.class);
-		for (Color c : Color.values()) {
-			map.put(c, getNonWallControlled(boardArray, c));
-		}
-		return map;
-	}
-	
-	private static int getNonWallControlled(Stack[][] boardArray, Color col) {
-		if (boardArray.length != 5) {
-			throw new RuntimeException("doesn't work for non-5 boards");
-		}
-		int nonWallControlled = 0;
-		for (int i=0; i<5; i++) {
-			for (int j=0; j<5; j++) {
-				if (!boardArray[i][j].isEmpty()) {
-					Stone stone = boardArray[i][j].top();
-					if (stone.type != PieceType.WALL && stone.color == col) {
-						// We should have an "on" bit in this place in the nonWallControlledMap
-						int position = i*5 + j;
-						int value = 1 << position;
-						nonWallControlled |= value;
-					}
-				}
-			}
-		}
-		
-		return nonWallControlled;
 	}
 
 	public Board(Stack[][] boardArray) {
